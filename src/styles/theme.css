@@ -1314,9 +1314,9 @@ blockquote p {
    ========================================================================== */
 @media (prefers-color-scheme: dark) {
     :root {
-        --dm-nightfall: #150a2e;
-        --dm-dusk: #1e1042;
-        --dm-dusk-2: #2a1854;
+        --dm-nightfall: #251b3f;
+        --dm-dusk: #30254f;
+        --dm-dusk-2: #3d3063;
         --dm-haze: #c9b8f0;
         --dm-glow: #c4b5fd;
         --dm-moonlight: #f3edff;
@@ -1368,7 +1368,7 @@ blockquote p {
     }
 
     .main-nav wa-button.active::part(base):hover {
-        background: #34205e;
+        background: #4a3c78;
         border-color: var(--dm-glow);
     }
 
@@ -1384,7 +1384,7 @@ blockquote p {
     }
 
     footer {
-        background: #241354;
+        background: #352a5c;
         color: var(--dm-haze);
     }
 
@@ -1410,7 +1410,7 @@ blockquote p {
 
     .utility-option:hover,
     .calendar-option:hover {
-        background: #34205e;
+        background: #4a3c78;
         border-color: #a78bfa;
     }
 
@@ -1456,7 +1456,7 @@ blockquote p {
     }
 
     .suggestion-submit:hover {
-        background: #34205e;
+        background: #4a3c78;
         border-color: #a78bfa;
     }
 
