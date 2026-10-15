@@ -38,4 +38,11 @@ const id = `et-${crypto.randomUUID()}`
         position: relative;
         top: -0.15em;
     }
+
+    @media (prefers-color-scheme: dark) {
+        .et,
+        .et-enhanced {
+            color: var(--dm-glow);
+        }
+    }
 </style>
