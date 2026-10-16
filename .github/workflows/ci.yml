@@ -14,6 +14,6 @@ permissions:
 
 jobs:
   validate:
-    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@923a1cb8e4d276d14b16935452765304e07a4985 # v0.10.0
+    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3f6252e4ab9000744b46d9d4d1a0172ee65cf992 # v0.13.1
     with:
       single-environment: true

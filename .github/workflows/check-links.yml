@@ -31,7 +31,8 @@ jobs:
           key: ${{ runner.os }}-bun-${{ hashFiles('bun.lock') }}
           restore-keys: ${{ runner.os }}-bun-
 
-      - run: bun install --frozen-lockfile
+      - name: Install dependencies
+        uses: taraxvoid/voidflow/actions/bun-install@3f6252e4ab9000744b46d9d4d1a0172ee65cf992 # v0.13.1
       - run: bun run build
 
       - name: Check links
