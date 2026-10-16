@@ -8,8 +8,12 @@ import sharp from 'sharp'
 const WIDTH = 1200
 const HEIGHT = 630
 const dest = './public/og-image.png'
-// Real logo (same source art as favicon.svg), shown full-bleed on the left
-const logo = `data:image/png;base64,${readFileSync('./public/apple-touch-icon-1024x1024.png').toString('base64')}`
+// Logo shown full-bleed on the left, rasterized from the SVG at card size
+const logoPng = await sharp('./public/logo.svg', { density: 300 })
+    .resize(HEIGHT, HEIGHT)
+    .png()
+    .toBuffer()
+const logo = `data:image/png;base64,${logoPng.toString('base64')}`
 
 const font = (pkg: string, file: string) =>
     readFileSync(`./node_modules/@fontsource/${pkg}/files/${file}`)

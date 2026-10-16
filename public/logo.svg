@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600">
+  <title>Queer Omaha</title>
+  <!-- Rainbow asterisk ("all"). Built like the 2010 GitHub pride filter
+       on the original pfp: dark asterisk on white, six-stripe flag
+       overlaid at 34%, so each arm takes the tint of its stripe. -->
+  <rect width="600" height="600" fill="#fff"/>
+  <g stroke="#262626" stroke-width="56" stroke-linecap="round">
+    <line x1="300" y1="125" x2="300" y2="475"/>
+    <line x1="148.4" y1="212.5" x2="451.6" y2="387.5"/>
+    <line x1="148.4" y1="387.5" x2="451.6" y2="212.5"/>
+  </g>
+  <g opacity="0.34">
+    <rect y="0" width="600" height="100" fill="#e40303"/>
+    <rect y="100" width="600" height="100" fill="#ff8c00"/>
+    <rect y="200" width="600" height="100" fill="#ffed00"/>
+    <rect y="300" width="600" height="100" fill="#008026"/>
+    <rect y="400" width="600" height="100" fill="#004dff"/>
+    <rect y="500" width="600" height="100" fill="#750787"/>
+  </g>
+</svg>
