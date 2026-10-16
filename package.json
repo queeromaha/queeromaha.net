@@ -41,7 +41,8 @@
         "generate:favicons": "bun run scripts/generate-favicons.ts",
         "commit": "bunx opencommit",
         "changelog": "git-cliff -o CHANGELOG.md",
-        "changelog:unreleased": "git-cliff --unreleased"
+        "changelog:unreleased": "git-cliff --unreleased",
+        "generate:og-image": "bun scripts/generate-og-image.ts"
     },
     "imports": {
         "#components/*": "./src/components/*",
@@ -73,6 +74,8 @@
         "@astrojs/check": "^0.9.10",
         "@axe-core/playwright": "^4.13.0",
         "@biomejs/biome": "^2.5.12",
+        "@fontsource/karla": "^5.3.0",
+        "@fontsource/space-grotesk": "^5.3.0",
         "@lizenz/checker": "^0.0.2",
         "@netlify/edge-functions": "^3.0.8",
         "@playwright/test": "^1.63.0",
@@ -81,10 +84,13 @@
         "@taraxvoid/voidflow": "0.11.1",
         "@types/bun": "^1.4.1",
         "@types/semver": "^7.8.0",
+        "astro-og": "^0.3.2",
         "favicons": "^7.3.1",
         "happy-dom": "^20.14.0",
         "npm-run-all2": "^9.0.3",
+        "satori": "^0.46.0",
         "semver": "^7.8.5",
+        "sharp": "^0.35.5",
         "typescript": "^6.0.3",
         "vitest": "^4.1.11",
         "yaml": "^2.9.0"

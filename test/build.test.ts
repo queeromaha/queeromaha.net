@@ -6,6 +6,50 @@ import { describe, expect, test } from 'vitest'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 
+describe('link preview meta', () => {
+    const distDir = join(ROOT, 'dist')
+    const imageUrl = 'https://queeromaha.net/og-image.png'
+    const meta = (html: string, attr: string, key: string) =>
+        html.match(new RegExp(`<meta ${attr}="${key}" content="([^"]*)"`))?.[1]
+
+    test.each(['index.html', 'art/index.html', 'contact/index.html'])(
+        '%s has og:image and twitter card tags',
+        (page) => {
+            const html = readFileSync(join(distDir, page), 'utf8')
+            expect(meta(html, 'property', 'og:image')).toBe(imageUrl)
+            expect(meta(html, 'property', 'og:image:width')).toBe('1200')
+            expect(meta(html, 'property', 'og:image:height')).toBe('630')
+            expect(meta(html, 'property', 'og:image:type')).toBe('image/png')
+            expect(meta(html, 'property', 'og:image:alt')).toBeTruthy()
+            expect(meta(html, 'name', 'twitter:card')).toBe(
+                'summary_large_image',
+            )
+            expect(meta(html, 'name', 'twitter:image')).toBe(imageUrl)
+            expect(meta(html, 'name', 'twitter:image:alt')).toBeTruthy()
+            expect(meta(html, 'name', 'twitter:title')).toBe(
+                meta(html, 'property', 'og:title'),
+            )
+        },
+    )
+
+    test('item permalinks have og:image', () => {
+        const dir = join(distDir, 'art')
+        const slug = readdirSync(dir, { withFileTypes: true }).find((d) =>
+            d.isDirectory(),
+        )?.name
+        expect(slug, 'no item permalink under dist/art').toBeDefined()
+        const html = readFileSync(join(dir, `${slug}`, 'index.html'), 'utf8')
+        expect(meta(html, 'property', 'og:image')).toBe(imageUrl)
+    })
+
+    test('og-image.png is a 1200x630 PNG', () => {
+        const buf = readFileSync(join(distDir, 'og-image.png'))
+        expect(buf.subarray(1, 4).toString('ascii')).toBe('PNG')
+        expect(buf.readUInt32BE(16)).toBe(1200)
+        expect(buf.readUInt32BE(20)).toBe(630)
+    })
+})
+
 describe('astro build', () => {
     test('produces dist/', () => {
         const distDir = join(ROOT, 'dist')
