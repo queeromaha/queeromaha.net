@@ -7,67 +7,26 @@ import sharp from 'sharp'
 
 const WIDTH = 1200
 const HEIGHT = 630
-const PANEL = 430
 const dest = './public/og-image.png'
+// Real logo (same source art as favicon.svg), shown full-bleed on the left
+const logo = `data:image/png;base64,${readFileSync('./public/apple-touch-icon-1024x1024.png').toString('base64')}`
 
 const font = (pkg: string, file: string) =>
     readFileSync(`./node_modules/@fontsource/${pkg}/files/${file}`)
-
-// Pastel stripes sampled from the favicon
-const stripes = [
-    '#fdc4b8',
-    '#fddcaa',
-    '#fdf1a3',
-    '#bff5d2',
-    '#b5e3fd',
-    '#dccbfd',
-]
 
 type Node = { type: string; props: Record<string, unknown> }
 const h = (
     type: string,
     style: Record<string, unknown>,
     children?: (Node | string)[] | Node | string,
-): Node => ({ type, props: { style, children } })
+    attrs: Record<string, unknown> = {},
+): Node => ({ type, props: { ...attrs, style, children } })
 
-const arm = (deg: number) =>
-    h('div', {
-        position: 'absolute',
-        top: 0,
-        left: 122,
-        width: 56,
-        height: 300,
-        background: '#3b2557',
-        transform: `rotate(${deg}deg)`,
-    })
-
-const panel = h(
-    'div',
-    {
-        display: 'flex',
-        position: 'relative',
-        width: PANEL,
-        height: HEIGHT,
-        flexDirection: 'column',
-    },
-    [
-        ...stripes.map((background) =>
-            h('div', { display: 'flex', flex: 1, background }),
-        ),
-        h(
-            'div',
-            {
-                display: 'flex',
-                position: 'absolute',
-                top: (HEIGHT - 300) / 2,
-                left: (PANEL - 300) / 2,
-                width: 300,
-                height: 300,
-            },
-            [arm(0), arm(60), arm(-60)],
-        ),
-    ],
-)
+const panel = h('img', { width: HEIGHT, height: HEIGHT }, undefined, {
+    src: logo,
+    width: HEIGHT,
+    height: HEIGHT,
+})
 
 const text = h(
     'div',
@@ -76,8 +35,8 @@ const text = h(
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        padding: '0 72px',
-        gap: 28,
+        padding: '0 56px',
+        gap: 24,
     },
     [
         h(
@@ -85,7 +44,7 @@ const text = h(
             {
                 fontFamily: 'Space Grotesk',
                 fontWeight: 700,
-                fontSize: 96,
+                fontSize: 66,
                 lineHeight: 1,
                 color: '#4c3170',
             },
@@ -95,7 +54,7 @@ const text = h(
             'div',
             {
                 fontFamily: 'Karla',
-                fontSize: 38,
+                fontSize: 30,
                 lineHeight: 1.3,
                 color: '#222',
             },
@@ -106,7 +65,7 @@ const text = h(
             {
                 fontFamily: 'Space Grotesk',
                 fontWeight: 500,
-                fontSize: 32,
+                fontSize: 26,
                 color: '#6d28d9',
             },
             'queeromaha.net',
