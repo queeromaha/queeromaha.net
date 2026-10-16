@@ -1,4 +1,4 @@
 [tools]
-bun = "latest"
+bun = "1.4.3"
 node = "24.21.0"
-lefthook = "2.1.16"
+lefthook = "2.2.1"
