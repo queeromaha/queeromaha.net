@@ -9,7 +9,7 @@ const { label, icon } = Astro.props
 const id = `et-${crypto.randomUUID()}`
 ---
 
-<span {id} class="et" title={label} role="img" aria-label={label}>
+<span {id} class="et" title={label} role="img" aria-label={label} tabindex="0">
     <Icon name={icon} width="1.25em" height="1.25em" aria-hidden="true" />
 </span>
 <wa-tooltip for={id} aria-hidden="true">{label}</wa-tooltip>
@@ -34,6 +34,12 @@ const id = `et-${crypto.randomUUID()}`
         @media (prefers-color-scheme: dark) {
             color: var(--dm-glow);
         }
+    }
+
+    .et:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+        border-radius: 4px;
     }
 
     /* Hides wa-tooltip until web awesome script loads */

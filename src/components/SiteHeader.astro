@@ -58,6 +58,18 @@ const pathname = Astro.url.pathname.replace(/\/$/, '')
       );
     setHeaderHeightVar();
     new ResizeObserver(setHeaderHeightVar).observe(headerEl);
+
+    // On a cold load landing on a hash, the native fragment scroll can run
+    // before web fonts settle and the header height changes, leaving the
+    // target short. Re-settle once fonts are ready; scrollIntoView respects
+    // theme.css's scroll-padding-top.
+    if (location.hash) {
+      document.fonts?.ready.then(() => {
+        document
+          .getElementById(decodeURIComponent(location.hash.slice(1)))
+          ?.scrollIntoView({ block: "start" });
+      });
+    }
   }
 
   const categoryLink = document.querySelector<HTMLAnchorElement>(
