@@ -175,6 +175,17 @@ describe('astro build', () => {
         expect(html).toContain('data-initial-categories="friends"')
     })
 
+    test('category pages only ship their own category cards', () => {
+        const html = readFileSync(
+            join(ROOT, 'dist', 'cafes', 'index.html'),
+            'utf8',
+        )
+        const categories = new Set(
+            [...html.matchAll(/data-category="([^"]+)"/g)].map((m) => m[1]),
+        )
+        expect([...categories]).toEqual(['cafes'])
+    })
+
     test('dist contains events.ics', () => {
         expect(existsSync(join(ROOT, 'dist', 'events.ics'))).toBe(true)
     })
