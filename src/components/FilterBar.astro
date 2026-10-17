@@ -34,7 +34,11 @@ const tags = Object.entries(
           </button>
         ))
     }
-    <span class="filter-pill-divider" aria-hidden="true"></span>
+    {
+      tags.some(({ slug }) => slug === "online") && (
+        <span class="filter-pill-divider" aria-hidden="true" />
+      )
+    }
     {
       tags
         .filter(({ slug }) => slug === "online")

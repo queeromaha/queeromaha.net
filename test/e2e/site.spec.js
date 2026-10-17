@@ -922,7 +922,7 @@ test('switching category while a card is active clears its active state', async 
 
     await expect
         .poll(() => page.evaluate(() => location.pathname))
-        .toBe('/cafes/')
+        .toBe('/cafes')
     await expect(card).not.toHaveClass(/item-active/)
 })
 

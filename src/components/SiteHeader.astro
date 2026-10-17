@@ -6,6 +6,7 @@ const categoryMap = categoryMapJson as Record<
     string,
     { icon: string; label: string; descriptor: string }
 >
+const pathname = Astro.url.pathname.replace(/\/$/, '')
 ---
 
 <header class="site-header">
@@ -16,11 +17,17 @@ const categoryMap = categoryMapJson as Record<
         Object.entries(categoryMap).map(([slug, { icon, label }]) => (
           <li>
             <a
-              href={`/${slug}/`}
-              aria-current={Astro.url.pathname === `/${slug}/` ? "page" : null}
+              href={`/${slug}`}
+              aria-current={
+                pathname === `/${slug}`
+                  ? "page"
+                  : pathname.startsWith(`/${slug}/`)
+                    ? "true"
+                    : null
+              }
               data-filter={slug}
               data-filter-type="category"
-              data-filter-match={Astro.url.pathname.startsWith(`/${slug}`)}
+              data-filter-match={pathname === `/${slug}` || pathname.startsWith(`/${slug}/`)}
             >
               <Icon
                 name={icon}
@@ -54,7 +61,7 @@ const categoryMap = categoryMapJson as Record<
   }
 
   const categoryLink = document.querySelector<HTMLAnchorElement>(
-    '.main-nav a[data-filter-match="true"]',
+    '.main-nav a[aria-current="page"]',
   );
   if (categoryLink) {
     categoryLink.addEventListener("click", (event) => {

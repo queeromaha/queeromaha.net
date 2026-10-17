@@ -90,7 +90,7 @@ Zod schemas live in `src/content.config.ts`. The `directory` collection uses the
 ### Routing
 
 - `/` — full directory, all categories shown
-- `/[category]/` — directory with that category pre-filtered (e.g. `/art/`, `/spiritual/`)
+- `/[category]` — directory with that category pre-filtered (e.g. `/art`, `/spiritual`)
 - `/[category]/[item-slug]` — item permalink within a category
 - `/[...].md` — Markdown rendering of the same directory/filter/item routes (for LLM/agent consumption), served by `src/pages/[...filters].md.ts`
 - `/contact` — standalone contact form (Netlify Forms)
