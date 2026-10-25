@@ -63,7 +63,6 @@ export const itemSchema = z.object({
 export const directoryPageSchema = z.object({
     title: z.string(),
     description: optionalString(),
-    public: z.preprocess(stripNull, z.boolean().default(true)),
     items: z.array(itemSchema).optional(),
 })
 
