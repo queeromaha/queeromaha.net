@@ -40,7 +40,7 @@ const canonicalUrl = new URL(Astro.url.pathname, site.url).href
     data-initial-tags={initialTags.join(" ")}
     data-initial-item-slug={initialItemSlug ?? ""}
   >
-    <SiteHeader />
+    <SiteHeader activeCategories={initialCategories} />
     <main id="main" tabindex="-1">
       {title && <h1 class="wa-visually-hidden">{title}</h1>}
       <slot />

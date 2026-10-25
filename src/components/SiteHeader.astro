@@ -6,6 +6,13 @@ const categoryMap = categoryMapJson as Record<
     string,
     { icon: string; label: string; descriptor: string }
 >
+interface Props {
+    // Categories the page renders; the root renders the default category
+    // without it being in the path, so highlight it from here too.
+    activeCategories?: string[]
+}
+
+const { activeCategories = [] } = Astro.props
 const pathname = Astro.url.pathname.replace(/\/$/, '')
 ---
 
@@ -27,7 +34,11 @@ const pathname = Astro.url.pathname.replace(/\/$/, '')
               }
               data-filter={slug}
               data-filter-type="category"
-              data-filter-match={pathname === `/${slug}` || pathname.startsWith(`/${slug}/`)}
+              data-filter-match={
+                pathname === `/${slug}` ||
+                pathname.startsWith(`/${slug}/`) ||
+                activeCategories.includes(slug)
+              }
             >
               <Icon
                 name={icon}
