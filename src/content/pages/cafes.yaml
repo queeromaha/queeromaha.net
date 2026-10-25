@@ -4,12 +4,12 @@ public: true
 items:
   - name: Roast Coffeehouse
     public: true
-    description: Great people, coffee and pastries both in Aksarben / 120th and Blondo.
+    description: Great people, coffee and pastries both in Aksarben and 120th and Blondo.
     links:
       - label: Instagram
         url: https://www.instagram.com/roast_coffeehouse/
       - label: Website
-        url: https://www.ahillofbeans.com/pages/roast-coffeehouse
+        url: https://roastcoffee.com
       - label: FB
         url: https://www.facebook.com/profile.php/?id=100089484920886
     tags:
