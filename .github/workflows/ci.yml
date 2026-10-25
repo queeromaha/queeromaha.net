@@ -7,6 +7,9 @@ on:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
+  # a11y and Lighthouse run only on schedule/dispatch (voidflow site-ci)
+  schedule:
+    - cron: '17 6 * * *'
 
 permissions:
   contents: read
@@ -14,6 +17,4 @@ permissions:
 
 jobs:
   validate:
-    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3f6252e4ab9000744b46d9d4d1a0172ee65cf992 # v0.13.1
-    with:
-      single-environment: true
+    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@488be01ffe7e05e337034f6726f00bf423cb5fa5 # pre-v0.17.0, voidflow#209 head; repin to the release tag

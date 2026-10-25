@@ -26,7 +26,7 @@ bun run test:e2e:smoke     # mobile Chrome smoke: site.spec only (no a11y, no re
 bun run test:e2e:desktop   # build + Playwright e2e (desktop-chrome)
 bun run test:e2e:all       # build + Playwright e2e (both projects)
 bun run test:e2e:a11y          # build + Playwright a11y spec only
-bun run test:push          # fast push gate: build + check + unit + e2e:smoke (CI runs a11y + full e2e)
+bun run test:push          # fast push gate: build + check + unit + e2e:smoke (CI runs full e2e; a11y + Lighthouse run nightly)
 ```
 
 Note: `bun test` invokes Bun's own built-in test runner, not the `test`
@@ -35,7 +35,7 @@ script above — always use `bun run test` / `bun run <script>` here.
 Git hooks (lefthook, shared config pinned from `taraxvoid/voidflow`; install the binary with `mise install`, then `bun install` wires the hooks):
 
 - pre-commit: `bun run format` (auto-fixes and re-stages), lint:actions, type-check, then `bun run test:unit` (excluding `test/build.test.ts` and `test/structured-data.test.ts`, which need a prior build)
-- pre-push: syncs with the remote branch first (aborts if the remote is ahead), then runs `bun run test:push` — build + type-check + unit + mobile smoke; a11y + full e2e are CI-only (ci.yml, via the shared `site-ci.yml` workflow in `taraxvoid/voidflow`)
+- pre-push: syncs with the remote branch first (aborts if the remote is ahead), then runs `bun run test:push` — build + type-check + unit + mobile smoke; full e2e is CI-only, and a11y + Lighthouse run on a nightly schedule (ci.yml, via the shared `site-ci.yml` workflow in `taraxvoid/voidflow`)
 
 Playwright defaults to the `mobile-chrome` project (`devices['Pixel 7']`) as
 the primary e2e target; `desktop-chrome` is opt-in via `test:e2e:desktop`
