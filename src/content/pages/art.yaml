@@ -501,3 +501,25 @@ items:
       street: 2702 S 10th St
       city: Omaha
       neighborhood: South Omaha
+  - name: Nebraska Poetry Society
+    public: true
+    description: Statewide poetry org. Hosts the Vocal Fry open mic in Omaha with a featured poet each month, plus the online Nebraska Poets Reading Series.
+    links:
+      - label: Events
+        url: https://www.nepoetrysociety.org/events
+      - label: Spoken Word
+        url: https://www.nepoetrysociety.org/spoken-word
+  - name: Nebraska Writers Collective
+    public: true
+    description: Spoken word nonprofit. Runs poetry slams, free youth spoken word lessons, and monthly all-ages open mics from August to April.
+    links:
+      - label: Events
+        url: https://www.newriters.org/events
+  - name: The Poetry Menu
+    public: true
+    description: Free community calendar of poetry readings, open mics, and slams across Nebraska.
+    tags:
+      - online
+    links:
+      - label: Website
+        url: https://poetrymenu.com/
