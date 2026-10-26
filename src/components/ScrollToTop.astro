@@ -1,14 +1,20 @@
+---
+import { Icon } from 'astro-icon/components'
+---
+
 <button
   id="backToTop"
   class="back-to-top"
   type="button"
   aria-label="Back to top"
 >
-  <wa-icon
+  <Icon
     class="icon"
-    name="circle-arrow-up"
-    variant="solid"
-    aria-hidden="true"></wa-icon>
+    width="1.25em"
+    height="1.25em"
+    name="fa7-solid:circle-arrow-up"
+    aria-hidden="true"
+  />
 </button>
 
 <script>
@@ -46,8 +52,6 @@
     color: #fff;
     border: 2px solid rgba(255, 255, 255, 0.3);
     border-radius: 50%;
-    width: 3rem;
-    height: 3rem;
     font-size: 1.5rem;
     cursor: pointer;
     box-shadow:
@@ -56,22 +60,21 @@
       inset -1px -1px 3px rgba(0, 0, 0, 0.2);
     opacity: 0;
     visibility: hidden;
-    transition:
-      opacity 0.3s,
-      visibility 0.3s,
-      transform 0.2s,
-      background-color 0.2s;
     z-index: 1000;
     line-height: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-
-    &.show {
-      opacity: 1;
-      visibility: visible;
+    padding: 0;
+    width: 3rem;
+    height: 3rem;
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        opacity 0.3s,
+        visibility 0.3s,
+        transform 0.2s,
+        background-color 0.2s;
     }
-
     &:hover,
     &:focus {
       background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
@@ -80,6 +83,25 @@
         0 6px 16px rgba(109, 40, 217, 0.5),
         inset 1px 1px 3px rgba(255, 255, 255, 0.4),
         inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+    }
+    @media (prefers-color-scheme: dark) {
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.5),
+        0 0 24px rgba(196, 181, 253, 0.35),
+        inset 1px 1px 3px rgba(255, 255, 255, 0.4),
+        inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+      &:hover,
+      &:focus {
+        box-shadow:
+          0 6px 16px rgba(0, 0, 0, 0.6),
+          0 0 32px rgba(196, 181, 253, 0.45),
+          inset 1px 1px 3px rgba(255, 255, 255, 0.4),
+          inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+      }
+    }
+    &.show {
+      opacity: 1;
+      visibility: visible;
     }
   }
 

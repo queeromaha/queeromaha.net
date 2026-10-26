@@ -48,28 +48,9 @@ const canonicalUrl = new URL(Astro.url.pathname, site.url).href
     <SiteFooter />
     <ScrollToTop />
     <script>
-      import "@awesome.me/webawesome/dist/components/button/button.js";
       import "@awesome.me/webawesome/dist/components/card/card.js";
-      import "@awesome.me/webawesome/dist/components/icon/icon.js";
-      import "@awesome.me/webawesome/dist/components/tooltip/tooltip.js";
       import "../scripts/filter";
       import "../scripts/permalink";
-
-      // On a cold load landing directly on a hash, the browser's native
-      // fragment scroll can run before these Web Awesome imports resolve
-      // and the header grows taller, leaving the scroll position short.
-      // Re-settle once the custom elements are defined; scrollIntoView
-      // respects theme.css's scroll-padding-top.
-      if (location.hash) {
-        Promise.all([
-          customElements.whenDefined("wa-button"),
-          customElements.whenDefined("wa-icon"),
-        ]).then(() => {
-          document
-            .getElementById(location.hash.slice(1))
-            ?.scrollIntoView({ block: "start" });
-        });
-      }
     </script>
     <script is:inline>
       document.addEventListener("click", function (e) {

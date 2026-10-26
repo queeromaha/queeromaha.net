@@ -6,12 +6,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 bun run serve          # dev server (Astro, localhost:4321) with hot-reload
-bun run build          # build static site to dist/ (astro build + generate-redirects.mjs)
+bun run build          # build static site to dist/ (astro build + scripts/generate-redirects.ts + sitemap.xml copy)
 bun run preview        # preview built dist/ locally
 bun run check          # astro check (type checking)
 
 bun run lint           # check formatting (biome)
-bun run format         # auto-fix formatting (biome + format-yaml.js)
+bun run format         # auto-fix formatting (biome + scripts/format-yaml.ts)
 
 bun run test           # everything: build, astro check, unit tests, and e2e (mobile-chrome)
 bun run test:unit      # unit tests only (vitest run, all of test/*.test.ts — assumes dist/ already built)
@@ -118,6 +118,8 @@ The footer (`src/components/SiteFooter.astro`) holds three `<details>`/`<summary
 - `src/utils/jsonLd.ts` — serializes JSON-LD, escaping `<` to prevent script-tag breakout
 - `src/utils/ical.ts` — builds the `.ics` feed from `recurring_events`
 - `src/utils/eventsPreview.ts` — computes the footer's upcoming-events preview list
+- `src/utils/linkRules.ts` — maps an item link's URL/label to a kind and icon (`resolveLink`) for `ItemCard`
+- `src/utils/motion.ts` — `prefersReducedMotion()` check for client scripts
 
 ### Components
 
@@ -125,8 +127,11 @@ The footer (`src/components/SiteFooter.astro`) holds three `<details>`/`<summary
 - `src/components/FilterBar.astro` — category + tag filter pills
 - `src/components/ItemCard.astro` — individual `wa-card` entry
 - `src/components/EntryTag.astro` — single tag pill/badge
-- `src/components/HeadMeta.astro` — `<head>` metadata, including JSON-LD structured data
+- `src/components/HeadMeta.astro` — `<head>` metadata, including JSON-LD structured data and link-preview (`og:` / `twitter:`) tags. The default share image `public/og-image.png` is committed; regenerate it with `bun run generate:og-image` (`scripts/generate-og-image.ts`, satori + sharp). The `astro-og` dev toolbar app previews cards under `bun run serve`
+- `src/components/LD.astro` — JSON-LD `<script>` emitted by `HeadMeta.astro`
 - `src/components/SiteHeader.astro` / `SiteFooter.astro` — header nav / footer accordions
+- `src/components/CalendarBox.astro` — the footer's "Gay Agenda" calendar accordion
+- `src/components/ScrollToTop.astro` — scroll-to-top button
 - `src/components/posthog.astro` — cookieless PostHog analytics snippet
 
 ### Tests
@@ -135,17 +140,11 @@ The footer (`src/components/SiteFooter.astro`) holds three `<details>`/`<summary
 - `test/build.test.ts` — runs `astro build` and checks `dist/` output
 - `test/structured-data.test.ts` — validates JSON-LD output from `HeadMeta.astro`
 - `test/filter.test.ts`, `test/itemSlug.test.ts`, `test/slugify.test.ts`, `test/location.test.ts`, `test/ical.test.ts`, `test/eventsPreview.test.ts` — unit tests for the corresponding `src/utils/*`
+- `test/generate-redirects.test.ts` — `scripts/generate-redirects.ts`
+- `test/markdownPath.test.ts` — `netlify/lib/markdownPath.ts` (URL to `.md` path mapping)
 - `test/e2e/site.spec.js` — Playwright tests serving `dist/` on port 4242
 - `test/e2e/a11y.spec.js` — Playwright + axe-core accessibility checks
 - `test/pages/*.test.ts` — tests for `.ics`, `.md`, `llms.txt`, and `robots.txt` route handlers
-
-Default to using Bun instead of Node.js/NPM.
-
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Use `bunx <package> <command>` instead of `npx <package> <command>`
-- Bun automatically loads .env, so don't use `dotenv`.
 
 ## Frontend
 
@@ -160,21 +159,57 @@ Default to using Bun instead of Node.js/NPM.
 Client-side JS/TS lives in `/src/scripts/`. Target specific elements—no global listeners.
 
 ```typescript
-// Good
-document.querySelectorAll('[data-toggle]').forEach((btn) => {
-  btn.addEventListener('click', handler)
-})
-
 // Avoid / Don't do
 window.onload = init()
+
+// Good
+document.querySelectorAll('[data-custom-action]').forEach((btn) => {
+  btn.addEventListener('click', handler)
+})
 ```
 
-Prefer attribute-based state:
+Prefer state-based attributes when appropriate:
 
 ```typescript
-element.setAttribute('aria-expanded', 'true')
-element.classList.add('active')
+// Insufficient
+button.classList.add('active')
+
+// Good, communicates button state to screen reading devices
+button.setAttribute('aria-pressed', 'true')
 ```
+
+### CSS Guidelines
+
+- Place global styles in `theme.css`
+- Place component-specific styles in the respective Astro component file
+  - Styles are automatically scoped per Astro component
+- When targeting `:hover`, also target `:focus` and/or `:focus-within` for keyboard navigators
+- Target state-based attributes and pseudo-selectors, when relevant, to maintain consistency
+```css
+.some-button {
+  &[aria-pressed="true"] {
+    /* Active/pressed style here */
+  }
+  &:disabled  {
+    /* Disabled style here */
+  }
+}
+```
+- When adding animations/transitions with motion, only apply it when the user has `prefers-reduced-motion: no-preference`
+```css
+.some-item {
+  @media (prefers-reduced-motion: no-preference) {
+    /* motion related styles here */
+  }
+}
+```
+
+#### Additional Recommendations
+- Avoid CSS ID selectors
+  - Instead, use class selectors
+- Do not use the `order` CSS property
+  - This creates a disconnect between visual and logical order
+  - Instead, move the HTML elements to the intended order instead
 
 ### Progressive Enhancement Levels
 
@@ -202,7 +237,7 @@ if (
 ### Accessibility Checklist
 
 - [x] Tab order follows visual flow
-- [x] Focus indicators visible (never outline: none without replacement)
+- [x] Focus indicators visible (never `outline: none` without replacement)
 - [x] Skip-to-main link present
 - [x] ARIA live regions only for dynamic updates (aria-live="polite")
 - [x] 4.5:1 contrast ratio minimum

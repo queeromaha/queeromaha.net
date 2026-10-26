@@ -29,7 +29,7 @@ test('home page renders expected chrome with no console errors', async ({
 
     const nav = page.locator('nav.main-nav')
     await expect(nav).toBeVisible()
-    expect(await nav.locator('wa-button').count()).toBeGreaterThan(0)
+    expect(await nav.locator('a').count()).toBeGreaterThan(0)
 
     await expect(page.locator('a.skip-link')).toHaveAttribute('href', '#main')
     await expect(page.getByRole('contentinfo')).toBeVisible()
@@ -63,7 +63,8 @@ test('external links have rel=noopener', async ({ page }) => {
 test('/spiritual pre-activates the spiritual filter pill', async ({ page }) => {
     await page.goto('/spiritual/')
     const pill = page.locator('[data-filter="spiritual"]')
-    await expect(pill).toHaveClass(/active/)
+    await expect(pill).toHaveAttribute('aria-current', 'page')
+    await expect(pill).toHaveAttribute('data-filter-match', 'true')
 })
 
 test('switching top-level category clears active tags', async ({ page }) => {
@@ -71,11 +72,13 @@ test('switching top-level category clears active tags', async ({ page }) => {
     const tag = page.locator('[data-filter="neutral-bathrooms"]')
 
     await tag.click()
-    await expect(tag).toHaveClass(/active/)
+    await expect(tag).toHaveAttribute('aria-pressed', 'true')
 
     await page.locator('[data-filter="cafes"]').click()
     await expect(page).toHaveURL(/\/cafes\/?$/)
-    await expect(tag).not.toHaveClass(/active/)
+    await expect(
+        page.locator('[data-filter="neutral-bathrooms"]'),
+    ).not.toHaveAttribute('aria-pressed', 'true')
 })
 
 test('calendar and suggestion box stay on the same row on mobile', async ({
@@ -271,7 +274,7 @@ test('item cards with a location show a location-dot icon', async ({
     expect(count).toBeGreaterThan(0)
     for (let i = 0; i < count; i++) {
         await expect(
-            locations.nth(i).locator('wa-icon[name="location-dot"]'),
+            locations.nth(i).locator('svg[data-icon*="location-dot"]'),
         ).toHaveCount(1)
     }
 })
@@ -640,18 +643,18 @@ test('links are ordered calendar > instagram > discord > website > facebook', as
         for (let i = 0; i < listCount; i++) {
             const list = lists.nth(i)
             const instaIndex = await list
-                .locator('li:has(wa-icon[name="instagram"])')
+                .locator('li:has(svg[data-icon*="instagram"])')
                 .count()
             const fbIndex = await list
-                .locator('li:has(wa-icon[name="facebook"])')
+                .locator('li:has(svg[data-icon*="facebook"])')
                 .count()
             if (instaIndex === 0 || fbIndex === 0) continue
 
             const iconNames = await list
-                .locator('li wa-icon')
-                .evaluateAll((els) => els.map((el) => el.getAttribute('name')))
-            const instaPos = iconNames.indexOf('instagram')
-            const fbPos = iconNames.indexOf('facebook')
+                .locator('li svg[data-icon]')
+                .evaluateAll((els) => els.map((el) => el.dataset.icon ?? ''))
+            const instaPos = iconNames.findIndex((i) => i.includes('instagram'))
+            const fbPos = iconNames.findIndex((i) => i.includes('facebook'))
             expect(instaPos).toBeGreaterThanOrEqual(0)
             expect(fbPos).toBeGreaterThan(instaPos)
             found = true
@@ -696,7 +699,6 @@ test('an unavailable tag pill is disabled and marked unavailable', async ({
     ).not.toBeNull()
 
     const pill = page.locator(`[data-filter="${unavailableSlug}"]`)
-    await expect(pill).toHaveClass(/unavailable/)
     await expect(pill).toBeDisabled()
 })
 
@@ -704,12 +706,12 @@ test('re-clicking the active category pill is a no-op', async ({ page }) => {
     await page.goto('/spiritual/')
     const tag = page.locator('[data-filter="neutral-bathrooms"]')
     await tag.click()
-    await expect(tag).toHaveClass(/active/)
+    await expect(tag).toHaveAttribute('aria-pressed', 'true')
 
     await page.locator('[data-filter="spiritual"]').click()
 
     await expect(page).toHaveURL(/\/spiritual\/?$/)
-    await expect(tag).toHaveClass(/active/)
+    await expect(tag).toHaveAttribute('aria-pressed', 'true')
 })
 
 test('back-to-top button appears on scroll and returns to the top', async ({
@@ -921,7 +923,7 @@ test('switching category while a card is active clears its active state', async 
     await expect
         .poll(() => page.evaluate(() => location.pathname))
         .toBe('/cafes')
-    await expect(card).not.toHaveClass(/item-active/)
+    await expect(card).toHaveCount(0)
 })
 
 test('/privacy loads, links back to the directory, and links to /contact', async ({

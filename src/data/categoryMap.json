@@ -1,31 +1,31 @@
 {
     "friends": {
-        "icon": "people-group",
+        "icon": "fa7-solid:people-group",
         "label": "Friends",
         "descriptor": "LGBTQ+ Groups & Community"
     },
     "spiritual": {
-        "icon": "lotus",
+        "icon": "fa7-solid:lotus",
         "label": "Spiritual",
         "descriptor": "Queer-Affirming Spiritual Spaces"
     },
     "art": {
-        "icon": "palette",
+        "icon": "fa7-solid:palette",
         "label": "Art",
         "descriptor": "Queer Art & Culture"
     },
     "cafes": {
-        "icon": "mug-saucer",
+        "icon": "fa7-solid:mug-saucer",
         "label": "Cafes",
         "descriptor": "LGBTQ+-Friendly Cafes"
     },
     "music": {
-        "icon": "music",
+        "icon": "fa7-solid:music",
         "label": "Music",
         "descriptor": "Queer Music & Nightlife"
     },
     "makers": {
-        "icon": "paintbrush",
+        "icon": "fa7-solid:paintbrush",
         "label": "Makers",
         "descriptor": "Queer Makers & Artisans"
     }

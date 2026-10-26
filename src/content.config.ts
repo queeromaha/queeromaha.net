@@ -1,7 +1,7 @@
 import { defineCollection } from 'astro:content'
 import { glob } from 'astro/loaders'
 import { z } from 'zod'
-import tagMap from './data/tagMap.json'
+import tagMap from '#data/tagMap.json'
 
 export const tagEnum = z.enum(Object.keys(tagMap) as [string, ...string[]])
 

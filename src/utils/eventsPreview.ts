@@ -1,4 +1,3 @@
-import { toZonedTime } from 'date-fns-tz'
 import type { RRule } from 'rrule'
 
 export interface ParsedEvent {
@@ -61,23 +60,36 @@ export function parseEvents(icsText: string): ParsedEvent[] {
     return events
 }
 
+const chicagoParts = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago',
+    hourCycle: 'h23',
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric',
+})
+
 // Converts a real instant into the America/Chicago wall-clock time,
 // represented as a fake-UTC Date (read back only via getUTC* accessors) —
 // this must go through the IANA tz database rather than the visitor's own
 // system timezone, since dtstart values are always Chicago wall-clock.
-function fakeUtc(date: Date): Date {
-    // toZonedTime returns a Date whose *local* getters show the Chicago
-    // wall-clock; re-pack those fields as UTC so it's system-tz independent.
-    const z = toZonedTime(date, 'America/Chicago')
+export function fakeUtc(date: Date): Date {
+    const p: Record<string, number> = {}
+    for (const { type, value } of chicagoParts.formatToParts(date)) {
+        p[type] = Number(value)
+    }
+    // Chicago's offset is whole minutes, so milliseconds carry over as-is.
     return new Date(
         Date.UTC(
-            z.getFullYear(),
-            z.getMonth(),
-            z.getDate(),
-            z.getHours(),
-            z.getMinutes(),
-            z.getSeconds(),
-            z.getMilliseconds(),
+            p.year,
+            p.month - 1,
+            p.day,
+            p.hour,
+            p.minute,
+            p.second,
+            date.getUTCMilliseconds(),
         ),
     )
 }

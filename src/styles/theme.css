@@ -24,32 +24,6 @@ body {
     flex-direction: column;
 }
 
-.skip-link {
-    background-color: #fff;
-    color: #6d28d9;
-    top: 0.75rem;
-    left: 0.75rem;
-    padding: 0.75rem 0.5rem;
-    position: absolute;
-    z-index: 101;
-    outline-offset: 0;
-    clip: rect(0 0 0 0);
-    clip-path: inset(50%);
-    height: 1px;
-    overflow: hidden;
-    white-space: nowrap;
-    width: 1px;
-}
-
-.skip-link:focus-visible {
-    clip: auto;
-    clip-path: none;
-    height: auto;
-    overflow: visible;
-    white-space: normal;
-    width: auto;
-}
-
 .sr-only {
     clip: rect(0 0 0 0);
     clip-path: inset(50%);
@@ -58,92 +32,6 @@ body {
     position: absolute;
     white-space: nowrap;
     width: 1px;
-}
-
-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 0;
-    font-size: large;
-}
-.main-nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    padding: 0.5rem 0.6rem;
-    margin: 0;
-    background: #ede9fe;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 3px 10px rgba(76, 29, 118, 0.12);
-}
-
-.main-nav wa-button {
-    flex: 1 0 auto;
-    min-width: 0;
-}
-
-@media (max-width: 500px) {
-    .main-nav wa-button {
-        flex: 1 0 33%;
-    }
-}
-
-.main-nav wa-button::part(base) {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    width: 100%;
-    color: #6d28d9;
-    background: #f9f5ff;
-    border: 2px solid #c4b5fd;
-    border-radius: 999px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    padding: 0.7rem 0.6rem;
-    cursor: pointer;
-    transition:
-        background 0.1s ease-out,
-        color 0.1s ease-out,
-        border-color 0.1s ease-out,
-        box-shadow 0.1s ease-out,
-        transform 0.1s ease-out;
-    box-shadow:
-        0 3px 0 #c4b5fd,
-        0 5px 8px rgba(76, 29, 118, 0.18);
-}
-
-.main-nav wa-button::part(base):hover {
-    background: #ede9fe;
-    border-color: #a78bfa;
-}
-
-.main-nav wa-button::part(base):active {
-    box-shadow: inset 0 2px 4px rgba(76, 29, 118, 0.25);
-    transform: translateY(2px);
-}
-
-.main-nav wa-button.active::part(base) {
-    background: #ede9fe;
-    border-color: #a78bfa;
-    color: #5b21b6;
-    box-shadow: inset 0 2px 4px rgba(76, 29, 118, 0.25);
-    transform: translateY(2px);
-}
-
-.main-nav wa-button.active::part(base):hover {
-    background: #ddd6fe;
-    border-color: #7c3aed;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .main-nav wa-button::part(base) {
-        transition: none;
-    }
 }
 
 main {
@@ -157,41 +45,22 @@ main {
     padding: 1.5rem;
     box-sizing: border-box;
     outline: none;
-}
-
-main:focus-visible {
-    outline: 3px solid #7c3aed;
-    outline-offset: 2px;
-}
-
-@media (max-width: 768px) {
-    main {
+    &:focus-visible {
+        outline: 3px solid #7c3aed;
+        outline-offset: 2px;
+    }
+    @media (max-width: 768px) {
         max-width: 100%;
         margin: 0 0.5rem 0.5rem 0.5rem;
         padding: 1rem;
         border-radius: 8px;
     }
-}
-
-@media (max-width: 480px) {
-    main {
+    @media (max-width: 480px) {
         margin: 0 0.25rem 0.5rem 0.25rem;
         padding: 1rem;
     }
 }
 
-@media (max-width: 500px) {
-    header {
-        font-size: medium;
-    }
-}
-
-@media (max-width: 380px) {
-    .main-nav wa-button::part(base) {
-        padding: 0.6rem 0.3rem;
-        letter-spacing: 0;
-    }
-}
 footer {
     background: #2e1065;
     color: #ede9fe;
@@ -371,7 +240,7 @@ footer a:hover {
    panel is an absolutely positioned popover (see .suggestion-box's comment
    above), so there's nothing in the row that needs to make room for it. */
 
-/* Reuses the same "pressed in" look as .filter-pill.active (inset
+/* Reuses the same "pressed in" look as .filter-pill[aria-pressed="true"] (inset
    shadow + translateY) so the open state reads as this button being
    currently pressed, not just its content changed. */
 .suggestion-box[open] summary.footer-pill-btn,
@@ -630,15 +499,17 @@ summary.footer-pill-btn::-webkit-details-marker {
     letter-spacing: 0.02em;
     font-family: var(--font-body);
     cursor: pointer;
-    transition:
-        background 0.1s ease-out,
-        color 0.1s ease-out,
-        border-color 0.1s ease-out,
-        box-shadow 0.1s ease-out,
-        transform 0.1s ease-out;
     box-shadow:
         0 2px 0 #c4b5fd,
         0 3px 6px rgba(76, 29, 118, 0.18);
+    @media (prefers-reduced-motion: no-preference) {
+        transition:
+            background 0.1s ease-out,
+            color 0.1s ease-out,
+            border-color 0.1s ease-out,
+            box-shadow 0.1s ease-out,
+            transform 0.1s ease-out;
+    }
 }
 
 .suggestion-submit:hover {
@@ -649,12 +520,6 @@ summary.footer-pill-btn::-webkit-details-marker {
 .suggestion-submit:active {
     box-shadow: inset 0 2px 4px rgba(76, 29, 118, 0.25);
     transform: translateY(2px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .suggestion-submit {
-        transition: none;
-    }
 }
 
 .suggestion-thanks,
@@ -725,15 +590,17 @@ summary.footer-pill-btn::-webkit-details-marker {
     white-space: nowrap;
     flex-shrink: 0;
     cursor: pointer;
-    transition:
-        background 0.1s ease-out,
-        color 0.1s ease-out,
-        border-color 0.1s ease-out,
-        box-shadow 0.1s ease-out,
-        transform 0.1s ease-out;
     box-shadow:
         0 2px 0 #c4b5fd,
         0 3px 6px rgba(76, 29, 118, 0.18);
+    @media (prefers-reduced-motion: no-preference) {
+        transition:
+            background 0.1s ease-out,
+            color 0.1s ease-out,
+            border-color 0.1s ease-out,
+            box-shadow 0.1s ease-out,
+            transform 0.1s ease-out;
+    }
 }
 
 .calendar-option:hover {
@@ -798,29 +665,6 @@ h2 {
     font-family: var(--font-display);
 }
 
-.section-header {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 0.4rem;
-    width: 100%;
-    margin: 0.75rem 0 0.5rem;
-    color: #6d28d9;
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.section-header wa-icon {
-    font-size: 1.2em;
-}
-
-.section-header.is-hidden {
-    display: none;
-}
-
 wa-card.item {
     display: block;
     margin-bottom: 0.5rem;
@@ -852,14 +696,16 @@ wa-card.item {
     box-shadow:
         2px 2px 0 #e9d5ff,
         3px 3px 0 #c4b5fd;
-    transition: box-shadow 0.15s ease-out;
-}
-
-wa-card.item:hover {
-    border-color: #a78bfa;
-    box-shadow:
-        3px 3px 0 #e9d5ff,
-        5px 5px 0 #c4b5fd;
+    @media (prefers-reduced-motion: no-preference) {
+        transition: box-shadow 0.15s ease-out;
+    }
+    &:hover,
+    &:focus-within {
+        border-color: #a78bfa;
+        box-shadow:
+            3px 3px 0 #e9d5ff,
+            5px 5px 0 #c4b5fd;
+    }
 }
 
 wa-card.item::part(header) {
@@ -891,12 +737,6 @@ wa-card.item.item-active::part(header),
 wa-card.item.item-active::part(body),
 wa-card.item.item-active::part(footer) {
     background: #ede9fe;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    wa-card.item {
-        transition: none;
-    }
 }
 
 .not-found {
@@ -938,15 +778,19 @@ wa-card.item.item-active::part(footer) {
     padding: 0.6rem 1.2rem;
     border-radius: 8px;
     background: #6d28d9;
-    color: #fff;
     text-decoration: none;
     font-weight: 600;
     transition: background 0.15s;
-}
-
-.not-found-cta:hover {
-    background: #5b21b6;
-    text-decoration: none;
+    &,
+    &:hover,
+    &:focus {
+        color: #fff;
+    }
+    &:hover,
+    &:focus {
+        background: #5b21b6;
+        text-decoration: none;
+    }
 }
 
 .not-found-countdown {
@@ -1119,187 +963,6 @@ blockquote p {
     margin: 0;
 }
 
-.entry-links {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    list-style: none;
-    gap: 0.4rem;
-    padding: 0;
-    margin: 0;
-}
-.entry-links li {
-    margin: 0;
-}
-.entry-links li:not(:last-child) {
-    padding-right: 0;
-    border-right: none;
-}
-.entry-links a {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 999px;
-    background: #f3e8ff;
-    border: 1px solid #c4b5fd;
-    color: #5b21b6;
-    font-size: 0.85rem;
-    font-weight: 600;
-    text-decoration: none;
-    border-bottom: none;
-    transition:
-        background 0.15s,
-        color 0.15s,
-        border-color 0.15s,
-        box-shadow 0.15s,
-        transform 0.15s;
-    min-height: 2rem;
-    white-space: nowrap;
-    /* Same "3D lip" every other pill button carries (header category
-       pills, .filter-pill, the footer pill buttons) — these link pills
-       were missing it entirely. Lip color matches the border, same
-       convention as .filter-pill and .utility-option. */
-    box-shadow: 0 2px 0 #c4b5fd;
-}
-.entry-links a:hover {
-    background: #ede9fe;
-    border-color: #a78bfa;
-    color: #4c1d95;
-    border-bottom: none;
-}
-.entry-links a:active {
-    box-shadow: inset 0 1px 3px rgba(76, 29, 118, 0.25);
-    transform: translateY(1px);
-}
-
-/* Filter bar */
-.filter-bar {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.4rem;
-    margin-top: -0.75rem;
-    margin-bottom: 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 3px solid #7c3aed;
-    box-shadow: 0 6px 10px -4px rgba(124, 58, 237, 0.13);
-}
-
-.section-divider {
-    border: none;
-    border-bottom: 3px solid #7c3aed;
-    box-shadow: 0 6px 10px -4px rgba(124, 58, 237, 0.13);
-    margin: 1rem 0;
-}
-
-.filter-pills {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem;
-}
-
-.filter-pill-divider {
-    align-self: stretch;
-    width: 1px;
-    margin: 0.2rem 0.15rem;
-    background: #c4b5fd;
-    box-shadow: 1px 0 0 rgba(124, 58, 237, 0.15);
-    flex: 0 0 auto;
-}
-
-.filter-pills--tags {
-    padding-top: 0.5rem;
-    margin-top: 0.15rem;
-    border-top: 1px solid #ddd6fe;
-    width: 100%;
-}
-
-@media (max-width: 480px) {
-    .filter-pills {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        padding-bottom: 4px;
-        scrollbar-width: none;
-    }
-    .filter-pills::-webkit-scrollbar {
-        display: none;
-    }
-}
-
-.filter-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    background: #f9f5ff;
-    border: 1px solid #ddd6fe;
-    color: #6d28d9;
-    font-size: 0.78rem;
-    font-weight: 700;
-    font-family: var(--font-mono);
-    cursor: pointer;
-    transition:
-        background 0.15s,
-        border-color 0.15s,
-        color 0.15s,
-        box-shadow 0.15s,
-        transform 0.15s;
-    white-space: nowrap;
-    box-shadow: 0 2px 0 #ddd6fe;
-}
-
-.filter-pill:hover {
-    background: #ede9fe;
-    border-color: #a78bfa;
-}
-
-.filter-pill:active {
-    box-shadow: inset 0 1px 3px rgba(76, 29, 118, 0.25);
-    transform: translateY(1px);
-}
-
-.filter-pill.active {
-    background: #ede9fe;
-    border-color: #a78bfa;
-    color: #5b21b6;
-    box-shadow: inset 0 1px 3px rgba(76, 29, 118, 0.25);
-    transform: translateY(1px);
-}
-
-.filter-pill.active:hover {
-    background: #ddd6fe;
-    border-color: #7c3aed;
-}
-
-.filter-pill.unavailable {
-    opacity: 0.35;
-    cursor: not-allowed;
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .filter-pill {
-        transition: none;
-    }
-}
-
-/* Nav github icon in header */
-.nav-github {
-    display: flex;
-    align-items: center;
-    padding: 0.8rem;
-    color: #fff;
-    opacity: 0.8;
-    font-size: 1.3rem;
-    transition: opacity 0.2s;
-}
-
-.nav-github:hover {
-    opacity: 1;
-}
-
 /* ==========================================================================
    Dark mode
 
@@ -1314,9 +977,9 @@ blockquote p {
    ========================================================================== */
 @media (prefers-color-scheme: dark) {
     :root {
-        --dm-nightfall: #150a2e;
-        --dm-dusk: #1e1042;
-        --dm-dusk-2: #2a1854;
+        --dm-nightfall: #251b3f;
+        --dm-dusk: #30254f;
+        --dm-dusk-2: #3d3063;
         --dm-haze: #c9b8f0;
         --dm-glow: #c4b5fd;
         --dm-moonlight: #f3edff;
@@ -1329,62 +992,18 @@ blockquote p {
         color: var(--dm-moonlight);
     }
 
-    .skip-link {
-        background-color: var(--dm-dusk);
-        color: var(--dm-glow);
-    }
-
-    .main-nav {
-        background: var(--dm-dusk-2);
-        box-shadow:
-            0 3px 10px rgba(0, 0, 0, 0.5),
-            0 0 20px rgba(196, 181, 253, 0.08);
-    }
-
-    .main-nav wa-button::part(base) {
-        color: var(--dm-glow);
-        background: var(--dm-dusk);
-        border-color: rgba(196, 181, 253, 0.4);
-        box-shadow:
-            0 3px 0 rgba(196, 181, 253, 0.3),
-            0 5px 8px rgba(0, 0, 0, 0.4),
-            0 0 10px rgba(196, 181, 253, 0.12);
-    }
-
-    .main-nav wa-button::part(base):hover {
-        background: var(--dm-dusk-2);
-        border-color: #a78bfa;
-    }
-
-    .main-nav wa-button::part(base):active {
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    .main-nav wa-button.active::part(base) {
-        background: var(--dm-dusk-2);
-        border-color: #a78bfa;
-        color: var(--dm-moonlight);
-        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    .main-nav wa-button.active::part(base):hover {
-        background: #34205e;
-        border-color: var(--dm-glow);
-    }
-
     main {
         background: var(--dm-dusk);
         box-shadow:
             0 2px 20px rgba(0, 0, 0, 0.45),
             0 0 40px rgba(196, 181, 253, 0.04);
-    }
-
-    main:focus-visible {
-        outline-color: var(--dm-glow);
+        &:focus-visible {
+            outline-color: var(--dm-glow);
+        }
     }
 
     footer {
-        background: #241354;
+        background: #352a5c;
         color: var(--dm-haze);
     }
 
@@ -1410,7 +1029,7 @@ blockquote p {
 
     .utility-option:hover,
     .calendar-option:hover {
-        background: #34205e;
+        background: #4a3c78;
         border-color: #a78bfa;
     }
 
@@ -1456,7 +1075,7 @@ blockquote p {
     }
 
     .suggestion-submit:hover {
-        background: #34205e;
+        background: #4a3c78;
         border-color: #a78bfa;
     }
 
@@ -1475,24 +1094,20 @@ blockquote p {
         color: #fca5a5;
     }
 
-    .section-header {
-        color: var(--dm-glow);
-    }
-
     wa-card.item {
         border-top-color: rgba(196, 181, 253, 0.4);
         border-color: rgba(196, 181, 253, 0.3);
         box-shadow:
             2px 2px 0 rgba(196, 181, 253, 0.15),
             3px 3px 0 rgba(196, 181, 253, 0.3);
-    }
-
-    wa-card.item:hover {
-        border-color: #a78bfa;
-        box-shadow:
-            3px 3px 0 rgba(196, 181, 253, 0.2),
-            5px 5px 0 rgba(196, 181, 253, 0.4),
-            0 0 16px rgba(196, 181, 253, 0.15);
+        &:hover,
+        &:focus-within {
+            border-color: #a78bfa;
+            box-shadow:
+                3px 3px 0 rgba(196, 181, 253, 0.2),
+                5px 5px 0 rgba(196, 181, 253, 0.4),
+                0 0 16px rgba(196, 181, 253, 0.15);
+        }
     }
 
     .item-tap-target:focus-visible {
@@ -1542,11 +1157,15 @@ blockquote p {
 
     .not-found-cta {
         background: var(--dm-glow);
-        color: var(--dm-nightfall);
-    }
-
-    .not-found-cta:hover {
-        background: var(--dm-moonlight);
+        &,
+        &:hover,
+        &:focus {
+            color: var(--dm-nightfall);
+        }
+        &:hover,
+        &:focus {
+            background: var(--dm-moonlight);
+        }
     }
 
     .not-found-countdown {
@@ -1592,92 +1211,16 @@ blockquote p {
     main a {
         color: #a5b4fc;
         border-bottom-color: rgba(196, 181, 253, 0.3);
-    }
-
-    main a:hover {
-        color: var(--dm-moonlight);
-        border-bottom-color: var(--dm-glow);
+        &:hover,
+        &:focus {
+            color: var(--dm-moonlight);
+            border-bottom-color: var(--dm-glow);
+        }
     }
 
     blockquote {
         background: rgba(196, 181, 253, 0.06);
         border-left-color: rgba(196, 181, 253, 0.5);
         color: var(--dm-haze);
-    }
-
-    .entry-links a {
-        background: var(--dm-dusk-2);
-        border-color: rgba(196, 181, 253, 0.35);
-        color: var(--dm-glow);
-        box-shadow: 0 2px 0 rgba(196, 181, 253, 0.3);
-    }
-
-    .entry-links a:hover {
-        background: rgba(196, 181, 253, 0.12);
-        border-color: #a78bfa;
-        color: var(--dm-moonlight);
-    }
-
-    .entry-links a:active {
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    #backToTop {
-        box-shadow:
-            0 4px 12px rgba(0, 0, 0, 0.5),
-            0 0 24px rgba(196, 181, 253, 0.35),
-            inset 1px 1px 3px rgba(255, 255, 255, 0.4),
-            inset -1px -1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    #backToTop:hover {
-        box-shadow:
-            0 6px 16px rgba(0, 0, 0, 0.6),
-            0 0 32px rgba(196, 181, 253, 0.45),
-            inset 1px 1px 3px rgba(255, 255, 255, 0.4),
-            inset -1px -1px 3px rgba(0, 0, 0, 0.2);
-    }
-
-    .filter-bar,
-    .section-divider {
-        border-bottom-color: var(--dm-glow);
-        box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.35);
-    }
-
-    .filter-pill-divider {
-        background: rgba(196, 181, 253, 0.4);
-        box-shadow: none;
-    }
-
-    .filter-pills--tags {
-        border-top-color: rgba(196, 181, 253, 0.25);
-    }
-
-    .filter-pill {
-        background: var(--dm-dusk);
-        border-color: rgba(196, 181, 253, 0.3);
-        color: var(--dm-glow);
-        box-shadow: 0 2px 0 rgba(196, 181, 253, 0.25);
-    }
-
-    .filter-pill:hover {
-        background: rgba(196, 181, 253, 0.12);
-        border-color: #a78bfa;
-    }
-
-    .filter-pill:active {
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .filter-pill.active {
-        background: rgba(196, 181, 253, 0.15);
-        border-color: #a78bfa;
-        color: var(--dm-moonlight);
-        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
-    }
-
-    .filter-pill.active:hover {
-        background: rgba(196, 181, 253, 0.22);
-        border-color: var(--dm-glow);
     }
 }

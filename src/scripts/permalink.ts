@@ -113,11 +113,7 @@ function init() {
     if (!controls) return
 
     if (seed) {
-        Promise.all([
-            customElements.whenDefined('wa-card'),
-            customElements.whenDefined('wa-button'),
-            customElements.whenDefined('wa-icon'),
-        ]).then(() => {
+        customElements.whenDefined('wa-card').then(() => {
             const target = document.getElementById(
                 `${seed.category}-${seed.slug}`,
             )

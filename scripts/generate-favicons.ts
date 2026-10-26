@@ -3,7 +3,8 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { favicons } from 'favicons'
 
-const source = readFileSync('./public/favicon.svg')
+// favicon.svg itself is a plain copy of logo.svg (not generated here)
+const source = readFileSync('./public/logo.svg')
 const dest = './public'
 
 const response = await favicons(source, {

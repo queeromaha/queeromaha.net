@@ -1,4 +1,5 @@
 ---
+import { Icon } from 'astro-icon/components'
 import Base from '#layouts/Base.astro'
 ---
 
@@ -9,47 +10,61 @@ import Base from '#layouts/Base.astro'
   <article class="legal-page">
     <wa-card class="legal-card">
       <h2 slot="header">
-        <wa-icon name="shield-halved" variant="solid" aria-hidden="true"></wa-icon>
+        <Icon
+          name="fa7-solid:shield-halved"
+          width="1.25em"
+          height="1.25em"
+          aria-hidden="true"
+        />
         Privacy
       </h2>
 
       <h3>Data Collected</h3>
       <ul>
         <li>
-          <strong>Analytics.</strong> PostHog is configured in cookieless mode and client IP addresses are redacted before logging.
+          <strong>Analytics.</strong> PostHog is configured in cookieless mode and
+          client IP addresses are redacted before logging.
         </li>
         <li>
-          <strong>Suggestion Box and Contact submissions.</strong> Suggestions are sent to Netlify and emailed to site admins. Email addresses are only used for correspondence and not for marketing.
+          <strong>Suggestion Box and Contact submissions.</strong> Suggestions are
+          sent to Netlify and emailed to site admins. Email addresses are only used
+          for correspondence and not for marketing.
         </li>
-        
       </ul>
 
       <h3>Why</h3>
       <p>
-        To understand which categories and listings people use, and
-        receive suggestions and messages from the community.
+        To understand which categories and listings people use, and receive
+        suggestions and messages from the community.
       </p>
 
       <h3>Who we share it with</h3>
       <p>
-        PostHog Inc. (analytics) and Netlify, Inc. (form handling and
-        site hosting). We don't sell data or share it.
+        PostHog Inc. (analytics) and Netlify, Inc. (form handling and site
+        hosting). We don't sell data or share it.
       </p>
 
       <h3>How long we keep it</h3>
       <p>
-        Analytics events are kept per PostHog's standard retention.
-        Suggestion Box and Contact submissions are kept until actioned and according to Netlify data retention.
+        Analytics events are kept per PostHog's standard retention. Suggestion
+        Box and Contact submissions are kept until actioned and according to
+        Netlify data retention.
       </p>
 
       <h3>Questions</h3>
       <p>
-        Email <a href="mailto:privacy@queeromaha.net">privacy@queeromaha.net</a> or use the <a href="/contact">contact form</a>.
+        Email <a href="mailto:privacy@queeromaha.net">privacy@queeromaha.net</a> or
+        use the <a href="/contact">contact form</a>.
       </p>
 
       <p>
         <a class="back-link" href="/friends">
-          <wa-icon name="arrow-left" variant="solid" aria-hidden="true"></wa-icon>
+          <Icon
+            name="fa7-solid:arrow-left"
+            width="1.25em"
+            height="1.25em"
+            aria-hidden="true"
+          />
           Go Back to the homepage
         </a>
       </p>

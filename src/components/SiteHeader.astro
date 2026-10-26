@@ -1,35 +1,263 @@
 ---
+import { Icon } from 'astro-icon/components'
 import categoryMapJson from '#data/categoryMap.json'
 
 const categoryMap = categoryMapJson as Record<
     string,
     { icon: string; label: string; descriptor: string }
 >
+const pathname = Astro.url.pathname.replace(/\/$/, '')
 ---
 
 <header class="site-header">
   <a class="skip-link" href="#main">Skip to main content</a>
-  <nav class="main-nav" aria-label="Main navigation">
-    {Object.entries(categoryMap).map(([slug, { icon, label }]) => (
-      <wa-button href={`/${slug}`} appearance="plain" data-filter={slug} data-filter-type="category" aria-pressed="false">
-        <wa-icon name={icon} aria-hidden="true"></wa-icon> {label}
-      </wa-button>
-    ))}
+  <nav class="main-nav" aria-label="Main">
+    <ul>
+      {
+        Object.entries(categoryMap).map(([slug, { icon, label }]) => (
+          <li>
+            <a
+              href={`/${slug}`}
+              aria-current={
+                pathname === `/${slug}`
+                  ? "page"
+                  : pathname.startsWith(`/${slug}/`)
+                    ? "true"
+                    : null
+              }
+              data-filter={slug}
+              data-filter-type="category"
+              data-filter-match={pathname === `/${slug}` || pathname.startsWith(`/${slug}/`)}
+            >
+              <Icon
+                name={icon}
+                class="icon"
+                height="1.25em"
+                width="1.25em"
+                aria-hidden="true"
+              />
+              {label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </nav>
 </header>
+
 <script>
-  // The sticky header's height varies by breakpoint (nav pills wrap) and
-  // grows once the wa-button/wa-icon custom elements upgrade, so track it
+  // The sticky header's height varies by breakpoint (nav pills wrap), so track it
   // live in a CSS var used by theme.css's scroll-padding-top rule instead
   // of hardcoding an offset for anchor-linked sections.
-  const headerEl = document.querySelector('.site-header')
+  const headerEl = document.querySelector(".site-header");
   if (headerEl) {
     const setHeaderHeightVar = () =>
       document.documentElement.style.setProperty(
-        '--header-height',
+        "--header-height",
         `${headerEl.getBoundingClientRect().height}px`,
-      )
-    setHeaderHeightVar()
-    new ResizeObserver(setHeaderHeightVar).observe(headerEl)
+      );
+    setHeaderHeightVar();
+    new ResizeObserver(setHeaderHeightVar).observe(headerEl);
+
+    // On a cold load landing on a hash, the native fragment scroll can run
+    // before web fonts settle and the header height changes, leaving the
+    // target short. Re-settle once fonts are ready; scrollIntoView respects
+    // theme.css's scroll-padding-top.
+    if (location.hash) {
+      document.fonts?.ready.then(() => {
+        document
+          .getElementById(decodeURIComponent(location.hash.slice(1)))
+          ?.scrollIntoView({ block: "start" });
+      });
+    }
+  }
+
+  const categoryLink = document.querySelector<HTMLAnchorElement>(
+    '.main-nav a[aria-current="page"]',
+  );
+  if (categoryLink) {
+    categoryLink.addEventListener("click", (event) => {
+      // Do not prevent modifier keys for opening in new window/tab/etc
+      if (
+        event.metaKey ||
+        event.shiftKey ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.button !== 0
+      ) {
+        return;
+      }
+
+      // Shift focus to main area if already in current category
+      // instead of re-navigating the page
+      event.preventDefault();
+      document.querySelector<HTMLElement>("#main")?.focus();
+    });
   }
 </script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0;
+    font-size: large;
+    @media (max-width: 500px) {
+      font-size: medium;
+    }
+  }
+
+  .skip-link {
+    background-color: #fff;
+    color: #6d28d9;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.75rem 0.5rem;
+    position: absolute;
+    z-index: 101;
+    outline-offset: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 1px;
+    &:focus-visible {
+      clip: auto;
+      clip-path: none;
+      height: auto;
+      overflow: visible;
+      white-space: normal;
+      width: auto;
+    }
+    @media (prefers-color-scheme: dark) {
+      background-color: var(--dm-dusk);
+      color: var(--dm-glow);
+    }
+  }
+
+  .main-nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    padding: 0.5rem 0.6rem;
+    margin: 0;
+    background: #ede9fe;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(76, 29, 118, 0.12);
+  }
+
+  .main-nav li {
+    margin: 0;
+    flex: 1 0 auto;
+    min-width: 0;
+    @media (max-width: 500px) {
+      flex-basis: 33%;
+    }
+  }
+
+  .main-nav a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    line-height: 1;
+    gap: 0.35rem;
+    width: 100%;
+    color: #6d28d9;
+    background: #f9f5ff;
+    border: 2px solid #c4b5fd;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    padding: 0.7rem 0.6rem;
+    box-shadow:
+      0 3px 0 #c4b5fd,
+      0 5px 8px rgba(76, 29, 118, 0.18);
+    @media (prefers-reduced-motion: no-preference) {
+      transition:
+        background 0.1s ease-out,
+        color 0.1s ease-out,
+        border-color 0.1s ease-out,
+        box-shadow 0.1s ease-out,
+        transform 0.1s ease-out;
+    }
+    &:hover,
+    &:focus {
+      background: #ede9fe;
+      border-color: #a78bfa;
+    }
+    &:active {
+      box-shadow: inset 0 2px 4px rgba(76, 29, 118, 0.25);
+      transform: translateY(2px);
+    }
+    &[aria-current="page"],
+    &[data-filter-match="true"] {
+      background: #ede9fe;
+      border-color: #a78bfa;
+      color: #5b21b6;
+      box-shadow: inset 0 2px 4px rgba(76, 29, 118, 0.25);
+      transform: translateY(2px);
+
+      &:hover,
+      &:focus {
+        background: #ddd6fe;
+        border-color: #7c3aed;
+      }
+    }
+    @media (max-width: 380px) {
+      padding: 0.6rem 0.3rem;
+      letter-spacing: 0;
+    }
+
+    .icon {
+      flex: 0 0 auto;
+    }
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .main-nav ul {
+      background: var(--dm-dusk-2);
+      box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.5),
+        0 0 20px rgba(196, 181, 253, 0.08);
+    }
+
+    .main-nav a {
+      color: var(--dm-glow);
+      background: var(--dm-dusk);
+      border-color: rgba(196, 181, 253, 0.4);
+      box-shadow:
+        0 3px 0 rgba(196, 181, 253, 0.3),
+        0 5px 8px rgba(0, 0, 0, 0.4),
+        0 0 10px rgba(196, 181, 253, 0.12);
+
+      &:hover,
+      &:focus {
+        background: var(--dm-dusk-2);
+        border-color: #a78bfa;
+      }
+      &:active {
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+      }
+
+      &[aria-current="page"],
+      &[data-filter-match="true"] {
+        background: var(--dm-dusk-2);
+        border-color: #a78bfa;
+        color: var(--dm-moonlight);
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+        &:hover,
+        &:focus {
+          background: #4a3c78;
+          border-color: var(--dm-glow);
+        }
+      }
+    }
+  }
+</style>

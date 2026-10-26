@@ -1,15 +1,17 @@
 ---
+import { Icon } from 'astro-icon/components'
 import CalendarBox from './CalendarBox.astro'
 ---
 
 <footer class="site-footer">
   <details class="suggestion-box" id="suggestionBox" name="footer-accordion">
     <summary class="footer-pill-btn">
-      <wa-icon
-        name="lightbulb"
-        variant="regular"
+      <Icon
+        name="fa7-regular:lightbulb"
+        width="1.25em"
+        height="1.25em"
         aria-hidden="true"
-        style="font-size: 1.25em;"></wa-icon>
+      />
       Suggestion Box
     </summary>
     <div class="suggestion-box-panel-wrap">
@@ -49,11 +51,12 @@ import CalendarBox from './CalendarBox.astro'
       </div>
       <div class="suggestion-box-toggle-row">
         <button class="suggestion-submit" type="submit" form="suggestForm">
-          <wa-icon
-            name="paper-plane"
-            variant="regular"
+          <Icon
+            name="fa7-regular:paper-plane"
+            width="1.25em"
+            height="1.25em"
             aria-hidden="true"
-            style="font-size: 1.5em;"></wa-icon>
+          />
           Send
         </button>
       </div>
@@ -70,8 +73,12 @@ import CalendarBox from './CalendarBox.astro'
         class="footer-pill-btn"
         aria-label="Utility Links (Privacy, Contact, GitHub)"
       >
-        <wa-icon name="wrench" aria-hidden="true" style="font-size: 1.4em;"
-        ></wa-icon>
+        <Icon
+          name="fa7-solid:wrench"
+          width="1.5em"
+          height="1.5em"
+          aria-hidden="true"
+        />
       </summary>
       <div class="utility-box-panel">
         <a
@@ -81,17 +88,29 @@ import CalendarBox from './CalendarBox.astro'
           rel="noopener noreferrer"
           aria-label="@taraxvoid/queeromaha on GitHub (opens in new tab)"
         >
-          <wa-icon family="brands" name="github" aria-hidden="true"
-          ></wa-icon>GitHub
+          <Icon
+            name="fa7-brands:github"
+            width="1.25em"
+            height="1.25em"
+            aria-hidden="true"
+          />GitHub
         </a>
         <a class="utility-option" href="/privacy">
-          <wa-icon name="circle-info" variant="solid" aria-hidden="true"
-          ></wa-icon>
+          <Icon
+            name="fa7-solid:circle-info"
+            width="1.25em"
+            height="1.25em"
+            aria-hidden="true"
+          />
           Privacy
         </a>
         <a class="utility-option" href="/contact">
-          <wa-icon name="envelope" variant="regular" aria-hidden="true"
-          ></wa-icon>
+          <Icon
+            name="fa7-regular:envelope"
+            width="1.25em"
+            height="1.25em"
+            aria-hidden="true"
+          />
           Contact
         </a>
       </div>

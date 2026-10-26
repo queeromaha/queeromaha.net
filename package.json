@@ -41,7 +41,8 @@
         "generate:favicons": "bun run scripts/generate-favicons.ts",
         "commit": "bunx opencommit",
         "changelog": "git-cliff -o CHANGELOG.md",
-        "changelog:unreleased": "git-cliff --unreleased"
+        "changelog:unreleased": "git-cliff --unreleased",
+        "generate:og-image": "bun scripts/generate-og-image.ts"
     },
     "imports": {
         "#components/*": "./src/components/*",
@@ -62,17 +63,21 @@
         "@fontsource-variable/karla": "^5.3.0",
         "@fontsource-variable/space-grotesk": "^5.3.0",
         "@fontsource/space-mono": "^5.3.0",
+        "@iconify-json/fa7-brands": "^1.2.4",
+        "@iconify-json/fa7-regular": "^1.2.3",
+        "@iconify-json/fa7-solid": "^1.2.5",
         "astro": "^7.3.1",
-        "date-fns": "^4.4.0",
-        "date-fns-tz": "^3.2.0",
+        "astro-icon": "^1.2.0",
         "posthog-js": "^1.427.2",
         "rrule": "^2.8.1",
         "schema-dts": "^2.0.0"
     },
     "devDependencies": {
-        "@astrojs/check": "^0.9.10",
+        "@astrojs/check": "0.9.10",
         "@axe-core/playwright": "^4.13.0",
         "@biomejs/biome": "^2.5.12",
+        "@fontsource/karla": "^5.3.0",
+        "@fontsource/space-grotesk": "^5.3.0",
         "@lizenz/checker": "^0.0.2",
         "@netlify/edge-functions": "^3.0.8",
         "@playwright/test": "^1.63.0",
@@ -84,7 +89,9 @@
         "favicons": "^7.3.1",
         "happy-dom": "^20.14.0",
         "npm-run-all2": "^9.0.3",
+        "satori": "^0.46.0",
         "semver": "^7.8.5",
+        "sharp": "^0.35.5",
         "typescript": "^6.0.3",
         "vitest": "^4.1.11",
         "yaml": "^2.9.0"

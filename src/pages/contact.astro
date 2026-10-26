@@ -1,12 +1,21 @@
 ---
+import { Icon } from 'astro-icon/components'
 import Base from '#layouts/Base.astro'
 ---
 
-<Base title="Contact" description="Contact an admin / maintainer at QueerOmaha.net.">
+<Base
+  title="Contact"
+  description="Contact an admin / maintainer at QueerOmaha.net."
+>
   <article class="legal-page">
     <wa-card class="legal-card">
       <h2 slot="header">
-        <wa-icon name="envelope" variant="regular" aria-hidden="true"></wa-icon>
+        <Icon
+          name="fa7-regular:envelope"
+          width="1.25em"
+          height="1.25em"
+          aria-hidden="true"
+        />
         Contact
       </h2>
 
@@ -18,7 +27,11 @@ import Base from '#layouts/Base.astro'
         data-netlify-honeypot="bot-field"
       >
         <p class="contact-honeypot">
-          <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+          <label
+            >Don't fill this out if you're human: <input
+              name="bot-field"
+            /></label
+          >
         </p>
         <label class="contact-label" for="contactEmail">Your email</label>
         <input
@@ -35,23 +48,32 @@ import Base from '#layouts/Base.astro'
           class="contact-textarea"
           name="message"
           required
-          rows="5"
-        ></textarea>
+          rows="5"></textarea>
         <button class="contact-submit" type="submit">
-          <wa-icon name="paper-plane" variant="regular" aria-hidden="true"></wa-icon>
+          <Icon
+            name="fa7-regular:paper-plane"
+            width="1.25em"
+            height="1.25em"
+            aria-hidden="true"
+          />
           Send
         </button>
       </form>
 
       <p>
         <a class="back-link" href="/friends">
-          <wa-icon name="arrow-left" variant="solid" aria-hidden="true"></wa-icon>
+          <Icon
+            name="fa7-solid:arrow-left"
+            width="1.25em"
+            height="1.25em"
+            aria-hidden="true"
+          />
           Go Back to the directory
         </a>
       </p>
     </wa-card>
   </article>
   <script>
-    import '../scripts/contactForm'
+    import "../scripts/contactForm";
   </script>
 </Base>

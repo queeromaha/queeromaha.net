@@ -1,13 +1,9 @@
 {
     "neutral-bathrooms": {
-        "icon": "transgender",
+        "icon": "fa7-solid:transgender",
         "label": "Single-Stall"
     },
-    "seating": { "icon": "couch", "label": "Seating" },
-    "wifi": { "icon": "laptop", "label": "WiFi" },
-    "online": {
-        "icon": "internet-explorer",
-        "label": "Online",
-        "family": "brands"
-    }
+    "seating": { "icon": "fa7-solid:couch", "label": "Seating" },
+    "wifi": { "icon": "fa7-solid:laptop", "label": "WiFi" },
+    "online": { "icon": "fa7-brands:internet-explorer", "label": "Online" }
 }

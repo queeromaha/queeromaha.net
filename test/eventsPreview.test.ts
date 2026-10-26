@@ -4,17 +4,27 @@
 // instead of converting through the IANA tz database.
 process.env.TZ = 'America/Los_Angeles'
 
-import { fromZonedTime } from 'date-fns-tz'
 import { RRule } from 'rrule'
 import { describe, expect, test } from 'vitest'
-import { getUpcomingEvents, parseEvents } from '#utils/eventsPreview.ts'
+import {
+    fakeUtc,
+    getUpcomingEvents,
+    parseEvents,
+} from '#utils/eventsPreview.ts'
 import { generateFeedICS } from '#utils/ical.ts'
 
 // Builds a real UTC instant from a wall-clock time expressed in
 // America/Chicago (matching how dtstart is always specified), regardless
 // of the test runner's system timezone.
 function chicagoNow(wallClock: string): Date {
-    return fromZonedTime(wallClock, 'America/Chicago')
+    // Treat the wall-clock as UTC, then shift by Chicago's offset at that
+    // point; the second pass corrects guesses that straddle a DST change.
+    const target = new Date(`${wallClock}Z`).getTime()
+    let instant = target
+    for (let i = 0; i < 2; i++) {
+        instant += target - fakeUtc(new Date(instant)).getTime()
+    }
+    return new Date(instant)
 }
 
 const baseEvent = {
@@ -264,5 +274,22 @@ describe('getUpcomingEvents', () => {
 
         expect(next?.start.getUTCDate()).toBe(8)
         expect(next?.start.getUTCHours()).toBe(18)
+    })
+})
+
+describe('fakeUtc', () => {
+    test('uses CST in winter and CDT in summer', () => {
+        expect(fakeUtc(new Date('2025-01-15T18:00:00Z')).toISOString()).toBe(
+            '2025-01-15T12:00:00.000Z',
+        )
+        expect(fakeUtc(new Date('2025-07-15T18:00:00Z')).toISOString()).toBe(
+            '2025-07-15T13:00:00.000Z',
+        )
+    })
+
+    test('rolls over midnight into the previous Chicago day', () => {
+        expect(fakeUtc(new Date('2025-03-01T03:30:00Z')).toISOString()).toBe(
+            '2025-02-28T21:30:00.000Z',
+        )
     })
 })

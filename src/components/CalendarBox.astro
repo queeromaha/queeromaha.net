@@ -1,13 +1,17 @@
+---
+import { Icon } from 'astro-icon/components'
+---
+
 <details class="calendar-box" id="calendarBox" name="footer-accordion">
-  <summary class="footer-pill-btn"
-    ><wa-icon
-      name="calendar"
-      variant="regular"
-      style="font-size: 1.25em;"
-      aria-hidden="true"></wa-icon><span class="footer-cal-label"
-      >Gay Agenda</span
-    ></summary
-  >
+  <summary class="footer-pill-btn">
+    <Icon
+      name="fa7-regular:calendar"
+      width="1.25em"
+      height="1.25em"
+      aria-hidden="true"
+    />
+    <span class="footer-cal-label">Gay Agenda</span>
+  </summary>
   <div class="calendar-box-panel-wrap">
     <div class="calendar-preview">
       <span class="calendar-preview-label">(Preview) Upcoming Events</span>
@@ -35,15 +39,24 @@
         rel="noopener noreferrer"
         aria-label="Subscribe to the Queer Omaha Events calendar in Google Calendar"
       >
-        <wa-icon family="brands" name="google-plus-g" aria-hidden="true"
-        ></wa-icon>Google Cal
+        <Icon
+          name="fa7-brands:google-plus-g"
+          width="1.25em"
+          height="1.25em"
+          aria-hidden="true"
+        />Google Cal
       </a>
       <a
         class="calendar-option"
         href="webcal://queeromaha.net/events.ics"
         aria-label="Add to Calendar (Apple Calendar and other calendar apps)"
       >
-        <wa-icon name="apple-whole" aria-hidden="true"></wa-icon>Apple Cal
+        <Icon
+          name="fa7-solid:apple-whole"
+          width="1.25em"
+          height="1.25em"
+          aria-hidden="true"
+        />Apple Cal
       </a>
     </div>
   </div>

@@ -2,9 +2,9 @@ import { prefersReducedMotion } from '#utils/motion.ts'
 
 function initFilters() {
     const cards = document.querySelectorAll<HTMLElement>('[data-category]')
-    const pills = document.querySelectorAll<
-        HTMLElement & { disabled: boolean }
-    >('[data-filter]')
+    const pills = document.querySelectorAll<HTMLButtonElement>(
+        'button[data-filter]',
+    )
 
     if (cards.length === 0) return
     const activeTags = new Set<string>()
@@ -70,46 +70,50 @@ function initFilters() {
             // Category pills are client-side toggles over the full card DOM
             // every route ships, so they're never limited by the current
             // selection and should never be disabled.
-            if (pill.dataset.filterType === 'category') {
+            if (
+                pill.dataset.filterType === 'category' ||
+                pill.getAttribute('aria-pressed') === 'true'
+            ) {
                 pill.disabled = false
-                pill.classList.remove('unavailable')
                 return
             }
-            if (pill.classList.contains('active')) {
-                pill.disabled = false
-                pill.classList.remove('unavailable')
-                return
-            }
+
             const slug = pill.dataset.filter || ''
             const type = pill.dataset.filterType || ''
             const available = wouldHaveResults(slug, type)
             pill.disabled = !available
-            pill.classList.toggle('unavailable', !available)
         })
     }
 
     function activateFilter(slug: string) {
-        const pill = document.querySelector<HTMLElement>(
-            `[data-filter="${slug}"]`,
-        )
+        const pill = document.querySelector<
+            HTMLAnchorElement | HTMLButtonElement
+        >(`[data-filter="${slug}"]`)
         if (!pill) return
-        if (pill.dataset.filterType === 'category') activeCategories.add(slug)
-        else if (pill.dataset.filterType === 'tag') activeTags.add(slug)
-        pill.classList.add('active')
-        pill.setAttribute('aria-pressed', 'true')
+        if (pill.dataset.filterType === 'category') {
+            activeCategories.add(slug)
+        } else if (pill.dataset.filterType === 'tag') {
+            activeTags.add(slug)
+        }
+        if (pill instanceof HTMLButtonElement) {
+            pill.setAttribute('aria-pressed', 'true')
+        }
         applyFilters()
     }
 
     function deactivateFilter(slug: string) {
-        const pill = document.querySelector<HTMLElement>(
-            `[data-filter="${slug}"]`,
-        )
+        const pill = document.querySelector<
+            HTMLAnchorElement | HTMLButtonElement
+        >(`[data-filter="${slug}"]`)
         if (!pill) return
-        if (pill.dataset.filterType === 'category')
+        if (pill.dataset.filterType === 'category') {
             activeCategories.delete(slug)
-        else if (pill.dataset.filterType === 'tag') activeTags.delete(slug)
-        pill.classList.remove('active')
-        pill.setAttribute('aria-pressed', 'false')
+        } else if (pill.dataset.filterType === 'tag') {
+            activeTags.delete(slug)
+        }
+        if (pill instanceof HTMLButtonElement) {
+            pill.setAttribute('aria-pressed', 'false')
+        }
         applyFilters()
     }
 
@@ -122,7 +126,6 @@ function initFilters() {
         activeSet.clear()
         pills.forEach((p) => {
             if (p.dataset.filterType === type) {
-                p.classList.remove('active')
                 p.setAttribute('aria-pressed', 'false')
             }
         })
@@ -148,7 +151,7 @@ function initFilters() {
         pill.addEventListener('click', (e) => {
             const slug = pill.dataset.filter || ''
             const type = pill.dataset.filterType || ''
-            const isActive = pill.classList.contains('active')
+            const isActive = pill.getAttribute('aria-pressed') === 'true'
 
             e.preventDefault()
 
@@ -167,8 +170,11 @@ function initFilters() {
             }
 
             // Tag pills.
-            if (isActive) deactivateFilter(slug)
-            else activateFilter(slug)
+            if (isActive) {
+                deactivateFilter(slug)
+            } else {
+                activateFilter(slug)
+            }
             history.pushState({}, '', buildUrl())
             if (!isActive) {
                 window.posthog?.capture('filter_applied', {
@@ -186,7 +192,9 @@ function initFilters() {
     const initTags = (document.body.dataset.initialTags || '')
         .split(' ')
         .filter(Boolean)
-    if (initCats.length > 0) setCategory(initCats[0])
+    if (initCats.length > 0) {
+        setCategory(initCats[0])
+    }
     initTags.forEach(activateFilter)
     // setCategory/activateFilter above only re-evaluate cards that match the
     // newly-active filter; this unconditional applyFilters() ensures every
