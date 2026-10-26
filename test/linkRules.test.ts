@@ -18,6 +18,26 @@ describe('resolveLink', () => {
         })
     })
 
+    test('bare as.me host also gets the register icon', () => {
+        const link = { label: 'Book', url: 'https://anandaomaha.as.me' }
+        expect(resolveLink(link).icon).toEqual({
+            name: 'fa7-solid:square-check',
+        })
+    })
+
+    test('radio and bowl match whole words only', () => {
+        const fallback = { name: 'fa7-solid:link' }
+        const url = 'https://example.com'
+        expect(resolveLink({ label: 'Radiology', url }).icon).toEqual(fallback)
+        expect(resolveLink({ label: 'Superbowl', url }).icon).toEqual(fallback)
+        expect(resolveLink({ label: 'Radio', url }).icon).toEqual({
+            name: 'fa7-solid:radio',
+        })
+        expect(resolveLink({ label: 'Bowling', url }).icon).toEqual({
+            name: 'fa7-solid:bowling-ball',
+        })
+    })
+
     test('canonical kinds keep their rank', () => {
         expect(
             resolveLink({

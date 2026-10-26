@@ -523,3 +523,11 @@ items:
     links:
       - label: Website
         url: https://poetrymenu.com/
+    recurring_events:
+      - summary: Poetry Night — Reading Room
+        rrule: FREQ=MONTHLY;BYDAY=1FR
+        dtstart: "20251107"
+        time: 18:30
+        end_time: 22:00
+        location: Reading Room (1505 Farnam St)
+        description: First Friday poetry night. Register by emailing readingroomomaha@gmail.com.

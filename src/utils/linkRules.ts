@@ -4,6 +4,16 @@ interface LinkRule {
     match: (url: string, label: string) => boolean
 }
 
+/** True when the URL's host is `domain` or one of its subdomains. */
+function hostIs(url: string, domain: string) {
+    try {
+        const host = new URL(url).hostname
+        return host === domain || host.endsWith(`.${domain}`)
+    } catch {
+        return false
+    }
+}
+
 /**
  * Canonical, fixed footer display order: calendar/events/schedule, Instagram,
  * Discord, Website, FB. Everything else keeps its original YAML order,
@@ -68,7 +78,7 @@ const linkRules: LinkRule[] = [
             l.includes('signup') ||
             u.includes('docs.google.com/forms') ||
             u.includes('forms.gle') ||
-            u.includes('.as.me/'),
+            hostIs(u, 'as.me'),
     },
     {
         kind: 'other',
@@ -134,7 +144,7 @@ const linkRules: LinkRule[] = [
     {
         kind: 'other',
         icon: { name: 'fa7-solid:radio' },
-        match: (_u, l) => l.includes('radio'),
+        match: (_u, l) => /\bradio\b/.test(l),
     },
     {
         kind: 'other',
@@ -154,7 +164,7 @@ const linkRules: LinkRule[] = [
     {
         kind: 'other',
         icon: { name: 'fa7-solid:bowling-ball' },
-        match: (_u, l) => l.includes('bowl'),
+        match: (_u, l) => /\bbowl/.test(l),
     },
 ]
 

@@ -231,7 +231,7 @@ items:
       neighborhood: Downtown
   - name: Reading Room
     public: true
-    description: Bookstore cafe / bar with a Queer-run poetry reading open mic night.
+    description: Bookstore cafe / bar with a Queer-run poetry reading open mic night. See also the Poetry Menu site.
     links:
       - label: Instagram
         url: https://www.instagram.com/reading_room_omaha/
@@ -239,6 +239,10 @@ items:
         url: https://readingroomomaha.com/events/
       - label: FB
         url: https://www.facebook.com/p/Reading-Room-Omaha-61576576713461/
+      - label: Poetry Reading
+        url: https://www.nepoetrysociety.org/spoken-word
+      - label: Poetry Menu
+        url: https://poetrymenu.com/
     tags:
       - seating
     location:
