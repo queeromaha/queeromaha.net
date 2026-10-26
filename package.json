@@ -78,7 +78,7 @@
         "@playwright/test": "^1.63.0",
         "@posthog/cli": "^0.8.4",
         "@socketsecurity/bun-security-scanner": "^1.1.2",
-        "@taraxvoid/voidflow": "0.11.1",
+        "@taraxvoid/voidflow": "^0.16.0",
         "@types/bun": "^1.4.1",
         "@types/semver": "^7.8.0",
         "favicons": "^7.3.1",
