@@ -87,7 +87,7 @@
         "@types/bun": "^1.4.1",
         "@types/semver": "^7.8.0",
         "favicons": "^7.3.1",
-        "happy-dom": "^20.14.0",
+        "happy-dom": "^21.0.4",
         "npm-run-all2": "^9.0.3",
         "satori": "^0.46.0",
         "semver": "^7.8.5",
