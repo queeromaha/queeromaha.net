@@ -56,7 +56,7 @@ describe('yaml source files', () => {
                 if ('error' in result) throw new Error(result.error)
                 expect(
                     result.canonical,
-                    'not canonically formatted — run `bun run format`',
+                    'not canonically formatted - run `bun run format`',
                 ).toBe(raw)
             })
 

@@ -135,7 +135,7 @@ docs: document git-cliff setup in README
 
 ### Enforcement
 
-The `commit-msg` hook checks every commit message against this format. It is **advisory only** — it prints a friendly hint but never blocks a commit. History before this convention was adopted is left as-is.
+The `commit-msg` hook checks every commit message against this format. It is **advisory only** - it prints a friendly hint but never blocks a commit. History before this convention was adopted is left as-is.
 
 ### AI-assisted commit messages
 
@@ -169,12 +169,12 @@ bun run changelog:unreleased
 
 **How `cliff.toml` works:**
 
-- `conventional_commits = true` — parses the standard `type(scope): message` format
-- `filter_unconventional = true` — silently drops non-conventional commits instead of erroring
-- `commit_parsers` — maps types to emoji-prefixed groups (Features, Bug Fixes, etc.) and sets sort order via `<!-- N -->` prefixes
-- `commit_preprocessors` — rewrites `(#123)` issue references into GitHub links
-- `postprocessors` — replaces the `<REPO>` placeholder with the actual GitHub URL
-- `topo_order_commits = true` — orders commits topologically within each release
+- `conventional_commits = true` - parses the standard `type(scope): message` format
+- `filter_unconventional = true` - silently drops non-conventional commits instead of erroring
+- `commit_parsers` - maps types to emoji-prefixed groups (Features, Bug Fixes, etc.) and sets sort order via `<!-- N -->` prefixes
+- `commit_preprocessors` - rewrites `(#123)` issue references into GitHub links
+- `postprocessors` - replaces the `<REPO>` placeholder with the actual GitHub URL
+- `topo_order_commits = true` - orders commits topologically within each release
 
 #### Link Checker
 

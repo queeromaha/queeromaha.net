@@ -31,7 +31,7 @@ export async function getFilterStaticPaths(): Promise<(string | undefined)[]> {
 
 // Shared resolution of a `filters` route param into the active
 // category/item and the visibility state every category should render
-// with — used by both the HTML page and its markdown counterpart so they
+// with - used by both the HTML page and its markdown counterpart so they
 // always agree on what's "visible" for a given URL.
 export async function resolveFilters(filters = '') {
     const filterSlugs = filters.split('/').filter(Boolean)
@@ -46,7 +46,7 @@ export async function resolveFilters(filters = '') {
         (a, b) => categorySlugs.indexOf(a.id) - categorySlugs.indexOf(b.id),
     )
 
-    // Mirrors cardMatches() in scripts/filter.ts (category only — tags are
+    // Mirrors cardMatches() in scripts/filter.ts (category only - tags are
     // never part of a static route). This lets the server render the same
     // hidden state filter.ts would apply on load, so there's no flash of the
     // full unfiltered directory before JS hides it (a major CLS source).
@@ -64,7 +64,7 @@ export async function resolveFilters(filters = '') {
             (item) => item.public !== false && (item.tags?.length ?? 0) > 0,
         )
 
-    // A permalink request is exactly `<category>/<item-slug>` — a trailing
+    // A permalink request is exactly `<category>/<item-slug>` - a trailing
     // segment beyond that (or one that doesn't match a known category first)
     // never resolves to an item deep link.
     const activePublicItems = (activeEntry?.data.items ?? []).filter(
@@ -93,8 +93,8 @@ export async function resolveFilters(filters = '') {
         : categoryPart
     const pageDescription = activeItem
         ? (activeItem.description ??
-          `${activeItem.name} — ${categoryPart} in Omaha, Nebraska.`)
-        : `${categoryPart} in Omaha, Nebraska — part of Queer Omaha's community-maintained directory.`
+          `${activeItem.name} - ${categoryPart} in Omaha, Nebraska.`)
+        : `${categoryPart} in Omaha, Nebraska - part of Queer Omaha's community-maintained directory.`
 
     return {
         entries,

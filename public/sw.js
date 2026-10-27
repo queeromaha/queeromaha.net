@@ -33,7 +33,7 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
     const url = new URL(e.request.url)
     if (!url.protocol.startsWith('http')) return
-    // The Cache API only supports GET — let POSTs (e.g. the suggestion
+    // The Cache API only supports GET - let POSTs (e.g. the suggestion
     // box form submission) pass straight through with no interception.
     if (e.request.method !== 'GET') return
     // Cache-first for hashed Astro assets (safe to cache forever)

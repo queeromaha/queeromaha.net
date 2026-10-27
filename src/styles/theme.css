@@ -115,7 +115,7 @@ footer {
 }
 
 /* Sits between .calendar-box (order: 0, default) and .suggestion-box
-   (order: 2) via this rule's own order: 1 — tighter against the
+   (order: 2) via this rule's own order: 1 - tighter against the
    calendar pill's outer side, leaving the roomier gap on the inner
    side (toward .suggestion-box), matching .footer-separator-right's
    same tighter-outer/roomier-inner treatment on its own side. */
@@ -150,7 +150,7 @@ footer {
 }
 
 .utility-box summary.footer-pill-btn {
-    /* Icon-only (no label) — smaller than the lightbulb/calendar pills,
+    /* Icon-only (no label) - smaller than the lightbulb/calendar pills,
        which pad out around a text label too. */
     padding: 0.3rem 0.6rem;
 }
@@ -181,13 +181,13 @@ footer a:hover {
     font-size: 1rem;
     font-weight: 500;
     /* Never let the label wrap or the pill get squeezed by flex
-       siblings — either would turn the rounded pill into a taller,
+       siblings - either would turn the rounded pill into a taller,
        squared-off box instead of just narrowing. */
     white-space: nowrap;
     flex-shrink: 0;
     /* Same "3D lip" bottom edge every other pill button carries (header
        category pills, the tag .filter-pill, the footer Send button). Like
-       those, the lip is lighter than its background, not darker — a black
+       those, the lip is lighter than its background, not darker - a black
        lip on the already-near-black #2e1065 footer is indistinguishable
        from the footer itself, which is why an earlier pass of this looked
        like no shadow was applied at all. The pressed/[open] state below
@@ -211,9 +211,9 @@ footer a:hover {
 .suggestion-box {
     order: 2;
     /* Web Awesome's native.css gives every <details> a white "panel"
-       background, border, and padding by default — reset it so the
+       background, border, and padding by default - reset it so the
        footer's purple background shows through, including its
-       margin-bottom: 24px (margin: 0 first, then margin-left: auto —
+       margin-bottom: 24px (margin: 0 first, then margin-left: auto -
        not the margin-left shorthand alone, which would leave that 24px
        in place and misalign the pill vertically against .calendar-box).
        margin-left: auto consumes all remaining free space on the left,
@@ -222,7 +222,7 @@ footer a:hover {
        separators.
 
        position: relative makes this the containing block for
-       .suggestion-box-panel-wrap's position: absolute below — deliberately
+       .suggestion-box-panel-wrap's position: absolute below - deliberately
        NOT overridden by any `[open]` rule, so this box's own size never
        changes between closed and open. That's what actually fixes the
        toggle jumping: the pill's containing element is a fixed size
@@ -236,7 +236,7 @@ footer a:hover {
     margin-left: auto;
 }
 
-/* None of the three footer toggles hide their siblings when opened — each
+/* None of the three footer toggles hide their siblings when opened - each
    panel is an absolutely positioned popover (see .suggestion-box's comment
    above), so there's nothing in the row that needs to make room for it. */
 
@@ -279,11 +279,11 @@ summary.footer-pill-btn::-webkit-details-marker {
 
 /* All three footer popovers share this shape: a small card that floats
    above the sticky-bottom footer via position: absolute, anchored to its
-   own toggle's box (each toggle's `<details>` is position: relative — see
+   own toggle's box (each toggle's `<details>` is position: relative - see
    .suggestion-box, .calendar-box, .utility-box). Because the toggle's own
    box never changes size between closed and open, and the panel is pulled
    out of flow entirely instead of competing for row space, there's nothing
-   left for `order`/margin tricks to chase — this is what actually fixes
+   left for `order`/margin tricks to chase - this is what actually fixes
    the toggle jumping, at any viewport width.
 
    Content-sized, not full footer width/height: each anchors from the edge
@@ -335,7 +335,7 @@ summary.footer-pill-btn::-webkit-details-marker {
 }
 
 /* Same scaled-down main-nav look as .calendar-option in the calendar
-   foldout (see comment there) — same size, shape, and depth treatment,
+   foldout (see comment there) - same size, shape, and depth treatment,
    so both foldouts' options read as one consistent style. */
 .utility-option {
     display: inline-flex;
@@ -399,7 +399,7 @@ summary.footer-pill-btn::-webkit-details-marker {
     min-width: 0;
 }
 
-/* Small "event chip" rows — a colored left edge and light fill, echoing
+/* Small "event chip" rows - a colored left edge and light fill, echoing
    (not copying) the look of a colored event entry in a calendar agenda
    view, so each row reads as a distinct event rather than a line in a
    text dump. */
@@ -453,7 +453,7 @@ summary.footer-pill-btn::-webkit-details-marker {
     margin-bottom: 0.35rem;
     color: #4c1d95;
     /* Unlike .calendar-preview-label (decorative caption), this is a real
-       <label for> tied to a required form field — the shared eyebrow
+       <label for> tied to a required form field - the shared eyebrow
        style's opacity: 0.65 would drop contrast below WCAG AA, so full
        opacity here instead. */
     opacity: 1;
@@ -479,7 +479,7 @@ summary.footer-pill-btn::-webkit-details-marker {
 }
 
 /* Same scaled-down main-nav look as .calendar-option in the calendar
-   foldout — same size, shape, and depth treatment, so both foldouts'
+   foldout - same size, shape, and depth treatment, so both foldouts'
    action buttons read as one consistent style. Stays left-aligned in
    .suggestion-box-toggle-row (no margin-left: auto there) rather than
    centered or full-width. */
@@ -491,7 +491,7 @@ summary.footer-pill-btn::-webkit-details-marker {
     background: #f3e8ff;
     border: 2px solid #c4b5fd;
     border-radius: 999px;
-    /* Wider than .calendar-option's padding — Send is the suggestion
+    /* Wider than .calendar-option's padding - Send is the suggestion
        box's one and only action, worth more visual weight. */
     padding: 0.4rem 1.3rem;
     font-size: 0.9rem;
@@ -547,7 +547,7 @@ summary.footer-pill-btn::-webkit-details-marker {
 
 .calendar-box {
     /* Same "reset Web Awesome details styling" story as .suggestion-box
-       (see comment there) — details/summary bring a default white panel
+       (see comment there) - details/summary bring a default white panel
        look that needs stripping so the footer's purple shows through.
        Web Awesome's native.css also sets margin-bottom: 24px on <details>;
        left unreset here (unlike .suggestion-box's margin: 0 auto), that
@@ -567,7 +567,7 @@ summary.footer-pill-btn::-webkit-details-marker {
 }
 
 /* Same scaled-down main-nav look as .suggestion-submit in the suggestion
-   box foldout (see comment there) — same size, shape, and depth
+   box foldout (see comment there) - same size, shape, and depth
    treatment, so both foldouts' action buttons read as one consistent
    style. */
 .calendar-option {
@@ -584,7 +584,7 @@ summary.footer-pill-btn::-webkit-details-marker {
     font-weight: 700;
     letter-spacing: 0.02em;
     font-family: var(--font-body);
-    /* Never let the label wrap or the pill get squeezed — either would
+    /* Never let the label wrap or the pill get squeezed - either would
        turn the rounded pill into a taller, squared-off box instead of
        just narrowing. */
     white-space: nowrap;
@@ -615,7 +615,7 @@ summary.footer-pill-btn::-webkit-details-marker {
 
 @media (max-width: 480px) {
     /* These mobile shrinks need to come after the base .footer-pill-btn /
-       .calendar-option rules further up the file — with
+       .calendar-option rules further up the file - with
        equal specificity, a later plain selector wins the cascade over an
        earlier media-scoped one whenever the media condition is also true,
        so declaring the shrink up near the other @media (max-width: 480px)
@@ -966,14 +966,14 @@ blockquote p {
 /* ==========================================================================
    Dark mode
 
-   Follows the OS/browser color-scheme preference — no manual toggle. Stays
+   Follows the OS/browser color-scheme preference - no manual toggle. Stays
    in the same violet family as the light theme, deepened rather than
    inverted: --dm-nightfall/--dm-dusk/--dm-dusk-2 replace the light theme's
    paper/lavender surfaces, --dm-glow/--dm-haze/--dm-moonlight replace its
    ink/accent text. Signature move: the light theme's hard "3D lip" shadow
    (a solid color offset, like a sticker) reads as a dark smudge on a dark
    surface, so interactive elements swap it for a soft violet bloom instead
-   — signage glowing after dark rather than a shape cut out of paper.
+   - signage glowing after dark rather than a shape cut out of paper.
    ========================================================================== */
 @media (prefers-color-scheme: dark) {
     :root {

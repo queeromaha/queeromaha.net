@@ -105,7 +105,7 @@ describe('getUpcomingEvents', () => {
             },
         ])
         const events = parseEvents(ics)
-        // Just after the 1st Tuesday of Jan 2025 (Jan 7) — next should be
+        // Just after the 1st Tuesday of Jan 2025 (Jan 7) - next should be
         // the 3rd Tuesday (Jan 21).
         const now = chicagoNow('2025-01-08T00:00:00')
         const [next] = getUpcomingEvents(events, now, RRule, 1)
@@ -241,8 +241,8 @@ describe('getUpcomingEvents', () => {
         ])
         const events = parseEvents(ics)
 
-        // A real instant that is 23:30 Wednesday in Chicago (CST, UTC-6) —
-        // half an hour *after* that day's occurrence — but only 21:30 in
+        // A real instant that is 23:30 Wednesday in Chicago (CST, UTC-6) -
+        // half an hour *after* that day's occurrence - but only 21:30 in
         // this suite's system timezone, America/Los_Angeles (PST, UTC-8),
         // i.e. still *before* the naive local reading of that occurrence.
         // An implementation that reads "now" via the runtime's own local

@@ -34,7 +34,7 @@ const {
 const visibleEntries = entries.filter((entry) => matchesInitial(entry.id))
 
 // Ties the per-item Organization JSON-LD blocks (emitted by ItemCard) together
-// as "this page lists these entities" — crawlers otherwise see a pile of
+// as "this page lists these entities" - crawlers otherwise see a pile of
 // disconnected Organization blocks with no listing structure.
 const visibleItemListElements = visibleEntries.flatMap((entry) => {
     const publicItems = (entry.data.items ?? []).filter(

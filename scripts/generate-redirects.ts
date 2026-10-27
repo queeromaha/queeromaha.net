@@ -3,7 +3,7 @@
 //   1. Static redirects in public/_redirects (e.g. legacy path aliases)
 //   2. Dynamic redirects derived from vanity_slug mismatches (auto != canonical)
 // The complete file is written (not appended), making the script idempotent
-// and safe to run multiple times. Each line is validated before writing —
+// and safe to run multiple times. Each line is validated before writing -
 // malformed lines from the static file are skipped with a warning rather
 // than silently corrupting the output.
 

@@ -9,15 +9,15 @@
 // ai-train=no reservation for bots that honor robots.txt. Signal semantics:
 // https://contentsignals.org/
 export async function GET() {
-    const body = `# Queer Omaha robots.txt — content-use signals:
-#   search=yes, ai-input=yes (allowed) · ai-train=no (not allowed)
+    const body = `# Queer Omaha robots.txt - content-use signals:
+#   search=yes, ai-input=yes (allowed) - ai-train=no (not allowed)
 # See https://contentsignals.org/ for signal semantics.
 User-agent: *
 Content-Signal: ai-train=no, search=yes, ai-input=yes
 Allow: /
 
 # AI *training* crawlers: disallowed to enforce ai-train=no. This does not
-# affect Search — Google Search uses Googlebot, not Google-Extended.
+# affect Search - Google Search uses Googlebot, not Google-Extended.
 User-agent: GPTBot
 Disallow: /
 

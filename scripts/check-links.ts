@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 /**
- * Local link checker — parses dist/ HTML and markdown for external links,
+ * Local link checker - parses dist/ HTML and markdown for external links,
  * tests them against the live web, and reports failures.
  *
  * Policy: 404/410 = gone (dead), 401/403 = private/restricted (inaccessible),

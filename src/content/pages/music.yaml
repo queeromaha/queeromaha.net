@@ -316,21 +316,21 @@ items:
       street: 1901 Harney St
       google_maps_url: https://maps.app.goo.gl/2bcSF3maPbCxcQ6B8?g_st=ic
     recurring_events:
-      - summary: The Slab — Darkwave / Rock / Goth
+      - summary: The Slab - Darkwave / Rock / Goth
         rrule: FREQ=MONTHLY;BYDAY=2SA
         dtstart: "20250111"
         time: 21:00
         location: The Verdict (Downtown Omaha)
         description: Goth and darkwave dance party
         url: https://www.instagram.com/slab_goth_night_omaha
-      - summary: Industrial Night — EBM / Heavy Beats
+      - summary: Industrial Night - EBM / Heavy Beats
         rrule: FREQ=MONTHLY;BYDAY=3SA
         dtstart: "20250118"
         time: 21:00
         location: The Verdict (Downtown Omaha)
         description: Cyberpunk / industrial dance party
         url: https://www.facebook.com/clubsinthesis/
-      - summary: RAWR XD Emo Nite — Emo / Alternative / Punk
+      - summary: RAWR XD Emo Nite - Emo / Alternative / Punk
         rrule: FREQ=MONTHLY;BYDAY=-1SA
         dtstart: "20250125"
         time: 21:00

@@ -39,7 +39,7 @@ for (const file of files) {
 }
 
 if (errors.length > 0) {
-    console.error('YAML parse error(s) — fix before committing:')
+    console.error('YAML parse error(s) - fix before committing:')
     for (const msg of errors) console.error(msg)
     process.exit(1)
 }
