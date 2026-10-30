@@ -1,4 +1,4 @@
 [tools]
 bun = "latest"
-node = "24.22.0" # cf needs ^24.22.0
+node = "24.22.0"
 lefthook = "2.1.16"

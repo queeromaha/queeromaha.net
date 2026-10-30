@@ -34,8 +34,7 @@ docs/superpowers
 .DS_Store
 Thumbs.db
 
-# Cloudflare (cf Build Output, generated types, local dev state)
-.cloudflare/
+# Wrangler (local dev state, secrets)
 .wrangler/
 .dev.vars*
 

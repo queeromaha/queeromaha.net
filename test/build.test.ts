@@ -282,28 +282,3 @@ describe('astro build', () => {
         }
     })
 })
-
-describe('Worker Build Output (cf)', () => {
-    const out = join(ROOT, '.cloudflare', 'output', 'v0', 'workers', 'default')
-    const config = () =>
-        JSON.parse(readFileSync(join(out, 'worker.config.json'), 'utf8'))
-
-    test('serves dist/ as assets through the Worker on queeromaha.dev', () => {
-        const cfg = config()
-        expect(cfg.name).toBe('queeromaha')
-        expect(cfg.domains).toContain('queeromaha.dev')
-        expect(cfg.assets.runWorkerFirst).toBe(true)
-        expect(existsSync(join(out, 'bundle', 'index.js'))).toBe(true)
-        expect(existsSync(join(out, 'assets', '_redirects'))).toBe(true)
-        expect(existsSync(join(out, 'assets', 'friends', 'index.html'))).toBe(
-            true,
-        )
-    })
-
-    test('declares the form bindings the Worker reads', () => {
-        const { env } = config()
-        expect(env.FORMS_EMAIL.type).toBe('send-email')
-        expect(env.FORMS_TO.type).toBe('secret')
-        expect(env.FORMS_RATE_LIMIT.type).toBe('rate-limit')
-    })
-})

@@ -1,0 +1,62 @@
+// Blue/green (#367): production serves queeromaha.dev (green) while Netlify
+// keeps serving queeromaha.net (blue). The build still says queeromaha.net
+// everywhere (canonical, sitemap, webcal), so cutover is only adding a
+// queeromaha.net route once that zone is on Cloudflare.
+//
+// `bun run build` must run first: the assets are Astro's dist/, including
+// the generated _redirects. The deploy token's Worker and zones are read
+// from this file (infra's cf-tokens.ts), so a new route shows up there as
+// drift.
+{
+    "$schema": "node_modules/wrangler/config-schema.json",
+    "name": "queeromaha-net",
+    "main": "./worker/index.ts",
+    "compatibility_date": "2026-10-20",
+    "workers_dev": false,
+    "preview_urls": true,
+    "observability": { "enabled": true },
+    "assets": {
+        "directory": "./dist",
+        "binding": "ASSETS",
+        "html_handling": "auto-trailing-slash",
+        "not_found_handling": "404-page",
+        // The Worker passes asset requests through itself; it only acts on
+        // POSTs and markdown-accepting page requests.
+        "run_worker_first": true
+    },
+    "routes": [{ "pattern": "queeromaha.dev", "custom_domain": true }],
+    // FORMS_TO is a Worker secret (CI passes it with --secrets-file). The
+    // destination is unrestricted here: Email Routing only delivers to the
+    // zone's verified addresses, and the address stays out of git.
+    "send_email": [
+        {
+            "name": "FORMS_EMAIL",
+            "allowed_sender_addresses": ["forms@queeromaha.dev"]
+        }
+    ],
+    "ratelimits": [
+        {
+            "name": "FORMS_RATE_LIMIT",
+            "namespace_id": "3671",
+            "simple": { "limit": 5, "period": 60 }
+        }
+    ],
+    // Worker Previews (`wrangler preview`) don't inherit bindings. They get
+    // their own rate-limit namespace and no FORMS_TO, so preview form
+    // submissions are dropped rather than emailed.
+    "previews": {
+        "send_email": [
+            {
+                "name": "FORMS_EMAIL",
+                "allowed_sender_addresses": ["forms@queeromaha.dev"]
+            }
+        ],
+        "ratelimits": [
+            {
+                "name": "FORMS_RATE_LIMIT",
+                "namespace_id": "3672",
+                "simple": { "limit": 5, "period": 60 }
+            }
+        ]
+    }
+}

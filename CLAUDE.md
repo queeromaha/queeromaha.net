@@ -6,11 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 bun run serve          # dev server (Astro, localhost:4321) with hot-reload
-bun run build          # build:site, then build:worker
-bun run build:site     # static site to dist/ (astro build + scripts/generate-redirects.ts + sitemap.xml copy); Netlify runs this
-bun run build:worker   # cf Build Output for the Worker (.cloudflare/output, from dist/ + worker/)
-bun run preview:worker # run the Worker locally against dist/ (forms + markdown negotiation)
-bun run deploy         # cf deploy --prebuilt (needs CLOUDFLARE_API_TOKEN; CI deploys main)
+bun run build          # static site to dist/ (astro build + scripts/generate-redirects.ts + sitemap.xml copy)
+bun run preview:worker # wrangler dev: the Worker locally against dist/ (forms + markdown negotiation)
+bun run deploy         # wrangler deploy (needs CLOUDFLARE_API_TOKEN; CI deploys main)
 bun run preview        # preview built dist/ locally
 bun run check          # astro check (type checking)
 
@@ -71,7 +69,7 @@ package.
 
 ## Architecture
 
-Static site built with **Astro**, served from Cloudflare Workers static assets with a small Worker in front (`worker/`), deployed with the `cf` CLI (`cloudflare.config.ts`; build settings in `wrangler.config.ts`). Mid blue/green cutover (#367): the Worker serves queeromaha.dev while Netlify (`netlify.toml`, `netlify/`) still serves queeromaha.net from the same build, whose canonical URL stays queeromaha.net. `cf` needs Node ^24.22 and doesn't run on Bun; never run `cf build`/`cf deploy` without `--prebuilt` here (cf detects Astro and runs `astro build` itself, skipping the redirects step). Content lives as plain YAML edited directly via git. Single layout at `src/layouts/Base.astro`.
+Static site built with **Astro**, served from Cloudflare Workers static assets with a small Worker in front (`worker/`), deployed with Wrangler (`wrangler.jsonc`, Worker `queeromaha-net`; the custom domain is queeromaha.dev for now). Mid blue/green cutover (#367): the Worker serves queeromaha.dev while Netlify (`netlify.toml`, `netlify/`) still serves queeromaha.net from the same build, whose canonical URL stays queeromaha.net. `bun run build` must run before any `wrangler` command. Deploy tokens are minted per Worker by voidflow's `cf-tokens` from `taraxvoid/infra`'s `cf-tokens.ts`, which reads the Worker name and routes from `wrangler.jsonc` on main, so renaming the Worker or adding a route changes what the token needs. Content lives as plain YAML edited directly via git. Single layout at `src/layouts/Base.astro`.
 
 ### Content model
 
@@ -147,6 +145,7 @@ The footer (`src/components/SiteFooter.astro`) holds three `<details>`/`<summary
 - `test/generate-redirects.test.ts` - `scripts/generate-redirects.ts`
 - `test/markdownPath.test.ts` - `worker/markdownPath.ts` (URL to `.md` path mapping, shared by the Worker and the Netlify edge function)
 - `test/forms.test.ts` - `worker/forms.ts` (form parsing, email message, handler responses)
+- `test/wrangler-config.test.ts` - `wrangler.jsonc` (Worker name, custom domain, form bindings incl. Previews)
 - `test/e2e/site.spec.js` - Playwright tests serving `dist/` on port 4242
 - `test/e2e/a11y.spec.js` - Playwright + axe-core accessibility checks
 - `test/pages/*.test.ts` - tests for `.ics`, `.md`, `llms.txt`, and `robots.txt` route handlers

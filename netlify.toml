@@ -1,9 +1,8 @@
 # Blue side of the blue/green move to Cloudflare Workers (#367): Netlify keeps
 # serving queeromaha.net until cutover, then this file and netlify/ go away.
-# build:site skips the Worker build (cf-wrangler), which Netlify doesn't need.
 [build]
 publish = "dist"
-command = "bun run build:site"
+command = "bun run build"
 
 [build.environment]
 # Netlify's default Bun predates minimumReleaseAgeExcludes (so a voidflow release

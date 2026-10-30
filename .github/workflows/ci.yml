@@ -24,7 +24,7 @@ jobs:
       pull-requests: write
     uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
     with:
-      e2e-extra-paths: '["cloudflare.config.ts", "wrangler.config.ts", "worker/**"]'
+      e2e-extra-paths: '["wrangler.jsonc", "worker/**"]'
 
   # Blue/green: this deploys green (the Worker on queeromaha.dev). Netlify
   # still serves queeromaha.net until cutover.
@@ -34,6 +34,7 @@ jobs:
     if: >-
       github.ref == 'refs/heads/main'
       && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && vars.CLOUDFLARE_ACCOUNT_ID != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment:
@@ -45,29 +46,33 @@ jobs:
     permissions:
       contents: read
     env:
-      CF_SEND_TELEMETRY: 'false'
       WRANGLER_SEND_METRICS: 'false'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: taraxvoid/voidflow/actions/branch-env-map@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
-      # bun and node (cf needs Node ^24.22) from mise.toml
+      # bun and node from mise.toml
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
       - name: Build
         run: bun run build
-      - name: Deploy
+      # Deploys add secrets without deleting others, so FORMS_TO rides along
+      # on every deploy and a rotated value takes effect on the next one.
+      - name: Write Worker secrets
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           FORMS_TO: ${{ secrets.FORMS_TO }}
-          SHA: ${{ github.sha }}
-        run: |
-          secrets="$RUNNER_TEMP/worker-secrets.env"
-          trap 'rm -f "$secrets"' EXIT
-          (umask 077; printf 'FORMS_TO=%s\n' "$FORMS_TO" > "$secrets")
-          bun run deploy --secrets-file "$secrets" --message "${SHA:0:7}"
+        run: (umask 077; printf 'FORMS_TO=%s\n' "$FORMS_TO" > "$RUNNER_TEMP/worker-secrets.env")
+      - name: Deploy
+        uses: taraxvoid/voidflow/actions/cloudflare-deploy@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+        with:
+          env: prod
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-account-id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          token-fallback: ${{ vars.CF_TOKEN_FALLBACK }}
+          command: deploy --secrets-file ${{ runner.temp }}/worker-secrets.env --message ${{ github.sha }}
+      - name: Remove Worker secrets
+        if: always()
+        run: rm -f "$RUNNER_TEMP/worker-secrets.env"
       # Retries cover a custom domain's certificate still provisioning on the
       # first deploy.
       - name: Smoke test
@@ -79,7 +84,9 @@ jobs:
           grep -q '^# ' "$md"
 
   # One Worker Preview per PR, named pr-<number>; deleted when the PR closes.
-  # Forks get no secrets, so they're skipped.
+  # Forks get no secrets, so they're skipped. The preview token is a repo
+  # secret (infra's cf-tokens.ts), so any job here can read it. Deploys and
+  # Previews skip until the CLOUDFLARE_ACCOUNT_ID variable is set.
   preview:
     name: Preview
     needs: validate
@@ -87,6 +94,7 @@ jobs:
       github.event_name == 'pull_request'
       && github.event.action != 'closed'
       && github.event.pull_request.head.repo.full_name == github.repository
+      && vars.CLOUDFLARE_ACCOUNT_ID != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: preview
@@ -97,7 +105,6 @@ jobs:
       contents: read
       pull-requests: write
     env:
-      CF_SEND_TELEMETRY: 'false'
       WRANGLER_SEND_METRICS: 'false'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -107,8 +114,9 @@ jobs:
       - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
       - name: Build
         run: bun run build
-        env:
-          CLOUDFLARE_PREVIEW_BUILD: 'true'
+      # `wrangler preview` (open beta) reads the `previews` block of
+      # wrangler.jsonc. Its --json shape isn't documented yet: take the first
+      # https URL.
       - name: Deploy Preview
         id: preview
         env:
@@ -116,12 +124,11 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          out=$(node_modules/.bin/cf previews deploy "pr-$PR_NUMBER" --prebuilt)
-          printf '%s\n' "$out"
-          json=$(printf '%s' "$out" | sed -n '/^[[:space:]]*{/,$p')
-          url=$(jq -r '.preview_urls[0] // empty' <<< "$json")
+          bunx wrangler preview --name "pr-$PR_NUMBER" --message "PR #$PR_NUMBER" --json \
+            | tee "$RUNNER_TEMP/preview.json"
+          url=$(jq -r '[.. | strings | select(test("^https://"))] | first // empty' "$RUNNER_TEMP/preview.json")
           if [ -z "$url" ]; then
-            echo "::error::cf previews deploy reported no Preview URL" >&2
+            echo "::error::wrangler preview reported no Preview URL" >&2
             exit 1
           fi
           echo "url=$url" >> "$GITHUB_OUTPUT"
@@ -150,13 +157,14 @@ jobs:
       github.event_name == 'pull_request'
       && github.event.action == 'closed'
       && github.event.pull_request.head.repo.full_name == github.repository
+      && vars.CLOUDFLARE_ACCOUNT_ID != ''
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: preview
     permissions:
       contents: read
     env:
-      CF_SEND_TELEMETRY: 'false'
+      WRANGLER_SEND_METRICS: 'false'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -169,4 +177,4 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         # A PR whose preview never deployed has nothing to delete.
-        run: node_modules/.bin/cf previews delete "pr-$PR_NUMBER" --worker queeromaha --force || true
+        run: bunx wrangler preview delete --name "pr-$PR_NUMBER" --skip-confirmation || true

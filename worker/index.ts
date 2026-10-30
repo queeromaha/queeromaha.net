@@ -1,5 +1,5 @@
 // The site is static assets (dist/); this Worker runs in front of them
-// (`runWorkerFirst` in cloudflare.config.ts) for the two things Netlify
+// (`run_worker_first` in wrangler.jsonc) for the two things Netlify
 // used to do at the edge: form POSTs and `Accept: text/markdown`
 // negotiation. Everything else goes straight to the assets, which apply
 // `_headers` and `_redirects`.

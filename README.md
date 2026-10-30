@@ -12,7 +12,6 @@ Directory of queer/trans groups, venues and spaces in Omaha.
 - \*nix
 - [Bun](https://bun.sh/) as drop-in Node interpreter replacement, package manager and test runner
 - (optional) [mise](https://mise.jdx.dev/) for node ver wrangling (see `mise.toml`)
-- (optional) Node ^24.22 for the [`cf` CLI](https://developers.cloudflare.com/cf/) (deploys to Cloudflare Workers)
 
 ## Stack
 
@@ -44,7 +43,7 @@ bun run dev
 
 Hosting is moving from Netlify to Cloudflare Workers ([#367](https://github.com/queeromaha/queeromaha.net/issues/367)) as a blue/green cutover:
 
-- **Green:** a Worker on [queeromaha.dev](https://queeromaha.dev) serving `dist/` as static assets, deployed with the [`cf` CLI](https://developers.cloudflare.com/cf/) (`cloudflare.config.ts`, plus `wrangler.config.ts` for build settings). The Worker (`worker/`) handles the contact and Suggestion Box form POSTs (emailed through Cloudflare Email Routing) and `Accept: text/markdown` negotiation.
+- **Green:** a Worker on [queeromaha.dev](https://queeromaha.dev) serving `dist/` as static assets, Worker `queeromaha-net`, deployed with [Wrangler](https://developers.cloudflare.com/workers/wrangler/) (`wrangler.jsonc`). The Worker (`worker/`) handles the contact and Suggestion Box form POSTs (emailed through Cloudflare Email Routing) and `Accept: text/markdown` negotiation.
 - **Blue:** Netlify keeps serving queeromaha.net (`netlify.toml`, `netlify/`) until cutover.
 
 Both serve the same build, which keeps `https://queeromaha.net` as its canonical URL.
@@ -56,17 +55,15 @@ Both serve the same build, which keeps `https://queeromaha.net` as its canonical
 - pushes to `main` deploy the Worker to production (GitHub environment `prod`)
 - non-draft pull requests get a Worker Preview named `pr-<number>`, linked in a PR comment and deleted when the PR closes (GitHub environment `preview`)
 
-Each environment needs a `CLOUDFLARE_API_TOKEN` secret and a `CLOUDFLARE_ACCOUNT_ID` variable; `prod` also needs a `FORMS_TO` secret (the verified Email Routing address that form submissions go to). The Netlify GitHub app still deploys queeromaha.net and its own PR previews.
+Deploy tokens are scoped per Worker and minted by voidflow's `cf-tokens` from the fleet config in `taraxvoid/infra` (`cf-tokens.ts`): `prod` gets an environment secret `CLOUDFLARE_API_TOKEN`, Previews a repository secret of the same name. Both need a `CLOUDFLARE_ACCOUNT_ID` variable; `prod` also needs a `FORMS_TO` secret (the verified Email Routing address that form submissions go to). The Netlify GitHub app still deploys queeromaha.net and its own PR previews.
 
 ### Manually
 
-`cf` needs Node ^24.22 (see `mise.toml`); it doesn't run on Bun.
-
 ```
 # authenticate (or set CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID)
-bunx cf auth login
+bunx wrangler login
 
-# build the site and the Worker's Build Output (.cloudflare/output)
+# build the site (dist/, which the Worker serves as assets)
 bun run build
 
 # run the Worker locally against dist/
@@ -76,8 +73,6 @@ bun run preview:worker
 bun run deploy:dry-run
 bun run deploy
 ```
-
-`cf build` / `cf deploy` without `--prebuilt` would run `astro build` on its own (it detects Astro, which doesn't build through `cf` during its beta) and skip the redirects step, so always build with `bun run build` and deploy with `--prebuilt`.
 
 ### Lint and Tests
 
