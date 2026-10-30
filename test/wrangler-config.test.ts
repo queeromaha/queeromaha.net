@@ -15,7 +15,10 @@ describe('wrangler.jsonc', () => {
         })
         expect(config.assets?.directory).toBe('./dist')
         expect(config.assets?.binding).toBe('ASSETS')
-        expect(config.assets?.run_worker_first).toBe(true)
+        // Pages and form POSTs reach the Worker; built files skip it.
+        expect(config.assets?.run_worker_first).toEqual(
+            expect.arrayContaining(['/*', '!/_astro/*', '!/*.png']),
+        )
     })
 
     test('declares the form bindings the Worker reads, in Previews too', () => {

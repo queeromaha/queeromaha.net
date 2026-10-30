@@ -20,9 +20,23 @@
         "binding": "ASSETS",
         "html_handling": "auto-trailing-slash",
         "not_found_handling": "404-page",
-        // The Worker passes asset requests through itself; it only acts on
-        // POSTs and markdown-accepting page requests.
-        "run_worker_first": true
+        // The Worker only acts on POSTs and markdown-accepting page requests,
+        // both on extensionless paths, so built files skip it (`*` matches
+        // across `/`). Forms never POST to a file path.
+        "run_worker_first": [
+            "/*",
+            "!/_astro/*",
+            "!/*.png",
+            "!/*.svg",
+            "!/*.ico",
+            "!/*.js",
+            "!/*.webmanifest",
+            "!/*.xml",
+            "!/*.ics",
+            "!/*.txt",
+            "!/*.md",
+            "!/*.html"
+        ]
     },
     "routes": [{ "pattern": "queeromaha.dev", "custom_domain": true }],
     // FORMS_TO is a Worker secret (CI passes it with --secrets-file). The
