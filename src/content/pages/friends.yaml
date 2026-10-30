@@ -226,11 +226,11 @@ items:
   - name: Omaha GLBT Sports
     vanity_slug: omaha-glbt-sports
     public: true
-    description: Year-round adult (19+) social sports. Volleyball, softball, darts and the Lousy Bowlers Club. Everyone welcome regardless of experience or sexuality.
+    description: Volleyball, softball, lawn darts and bowling.
     links:
       - label: Website
         url: https://www.oglbtsports.org/
-      - label: Lousy Bowlers Club
+      - label: Bowling Club
         url: https://www.oglbtsports.org/lousy-bowlers-club
       - label: Instagram
         url: https://www.instagram.com/omahaglbtsports/
