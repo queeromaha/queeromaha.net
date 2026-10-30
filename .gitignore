@@ -34,8 +34,10 @@ docs/superpowers
 .DS_Store
 Thumbs.db
 
-# Netlify
-.netlify
+# Cloudflare (cf Build Output, generated types, local dev state)
+.cloudflare/
+.wrangler/
+.dev.vars*
 
 # Playwright
 playwright-report/
