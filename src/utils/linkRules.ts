@@ -4,6 +4,16 @@ interface LinkRule {
     match: (url: string, label: string) => boolean
 }
 
+/** True when the URL's host is `domain` or one of its subdomains. */
+function hostIs(url: string, domain: string) {
+    try {
+        const host = new URL(url).hostname
+        return host === domain || host.endsWith(`.${domain}`)
+    } catch {
+        return false
+    }
+}
+
 /**
  * Canonical, fixed footer display order: calendar/events/schedule, Instagram,
  * Discord, Website, FB. Everything else keeps its original YAML order,
@@ -67,7 +77,8 @@ const linkRules: LinkRule[] = [
             l.includes('register') ||
             l.includes('signup') ||
             u.includes('docs.google.com/forms') ||
-            u.includes('forms.gle'),
+            u.includes('forms.gle') ||
+            hostIs(u, 'as.me'),
     },
     {
         kind: 'other',
@@ -125,7 +136,40 @@ const linkRules: LinkRule[] = [
         icon: { name: 'fa7-brands:substack' },
         match: (u) => u.includes('substack.com'),
     },
+    {
+        kind: 'other',
+        icon: { name: 'fa7-brands:mixcloud' },
+        match: (u) => u.includes('mixcloud.com'),
+    },
+    {
+        kind: 'other',
+        icon: { name: 'fa7-solid:radio' },
+        match: (_u, l) => /\bradio\b/.test(l),
+    },
+    {
+        kind: 'other',
+        icon: { name: 'fa7-solid:microphone' },
+        match: (_u, l) => l.includes('spoken word') || l.includes('poetry'),
+    },
+    {
+        kind: 'other',
+        icon: { name: 'fa7-solid:bullhorn' },
+        match: (_u, l) => l.includes('open call'),
+    },
+    {
+        kind: 'other',
+        icon: { name: 'fa7-solid:book' },
+        match: (_u, l) => l.includes('resource'),
+    },
+    {
+        kind: 'other',
+        icon: { name: 'fa7-solid:bowling-ball' },
+        match: (_u, l) => /\bbowl/.test(l),
+    },
 ]
+
+/** Shown when no rule matches, so every link pill has an icon. */
+const fallbackIcon = { name: 'fa7-solid:link' }
 
 export function matchRule(url: string, label: string) {
     return linkRules.find((r) => r.match(url, label)) ?? null
@@ -144,5 +188,5 @@ export function resolveLink(link: { url: string; label: string }) {
     const label = link.label.toLowerCase()
     const rule = matchRule(url, label)
     const kind = rule?.kind ?? 'other'
-    return { icon: rule?.icon ?? null, rank: canonicalRank[kind] ?? 5 }
+    return { icon: rule?.icon ?? fallbackIcon, rank: canonicalRank[kind] ?? 5 }
 }

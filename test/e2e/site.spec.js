@@ -67,6 +67,18 @@ test('/spiritual pre-activates the spiritual filter pill', async ({ page }) => {
     await expect(pill).toHaveAttribute('data-filter-match', 'true')
 })
 
+test('/ highlights the default friends category pill', async ({ page }) => {
+    await page.goto('/')
+    await expect(page.locator('[data-filter="friends"]')).toHaveAttribute(
+        'data-filter-match',
+        'true',
+    )
+    await expect(page.locator('[data-filter="art"]')).not.toHaveAttribute(
+        'data-filter-match',
+        'true',
+    )
+})
+
 test('switching top-level category clears active tags', async ({ page }) => {
     await page.goto('/art/')
     const tag = page.locator('[data-filter="neutral-bathrooms"]')
