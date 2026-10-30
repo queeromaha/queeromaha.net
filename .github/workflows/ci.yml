@@ -61,7 +61,12 @@ jobs:
       - name: Write Worker secrets
         env:
           FORMS_TO: ${{ secrets.FORMS_TO }}
-        run: (umask 077; printf 'FORMS_TO=%s\n' "$FORMS_TO" > "$RUNNER_TEMP/worker-secrets.env")
+        run: |
+          if [ -z "$FORMS_TO" ]; then
+            echo "::error::FORMS_TO secret is not set; deploying would blank the Worker's form destination" >&2
+            exit 1
+          fi
+          (umask 077; printf 'FORMS_TO=%s\n' "$FORMS_TO" > "$RUNNER_TEMP/worker-secrets.env")
       - name: Deploy
         uses: taraxvoid/voidflow/actions/cloudflare-deploy@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
         with:
@@ -145,8 +150,11 @@ jobs:
         run: |
           marker="<!-- cf-preview:pr-$PR_NUMBER -->"
           body=$(printf '%s\nPreview: %s (at %s)\n' "$marker" "$PREVIEW_URL" "${SHA:0:7}")
-          id=$(gh api --paginate "repos/$GH_REPO/issues/$PR_NUMBER/comments" \
-            --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)
+          # --jq runs per page, so take the first match in bash rather than
+          # piping into head (SIGPIPE under pipefail).
+          ids=$(gh api --paginate "repos/$GH_REPO/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id")
+          id=${ids%%$'\n'*}
           if [ -n "$id" ]; then
             gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -f body="$body" > /dev/null
           else
@@ -163,6 +171,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: preview
+    # Same group as the Preview job: cancels a deploy still running from an
+    # earlier push, so it can't recreate pr-N after this deletes it.
+    concurrency:
+      group: preview-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     permissions:
       contents: read
     env:
