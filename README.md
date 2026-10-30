@@ -1,6 +1,6 @@
 # queeromaha.net
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/eb46506c-ce32-4485-ae05-ae4872ac953c/deploy-status)](https://app.netlify.com/projects/queeromaha/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/eb46506c-ce32-4485-ae05-ae4872ac953c/deploy-status)](https://app.netlify.com/projects/queeromaha/deploys) (until the Cloudflare cutover)
 
 ![trans rights](https://pride-badges.pony.workers.dev/static/v1?label=trans%20rights&stripeWidth=6&stripeColors=5BCEFA,F5A9B8,FFFFFF,F5A9B8,5BCEFA)
 
@@ -12,7 +12,6 @@ Directory of queer/trans groups, venues and spaces in Omaha.
 - \*nix
 - [Bun](https://bun.sh/) as drop-in Node interpreter replacement, package manager and test runner
 - (optional) [mise](https://mise.jdx.dev/) for node ver wrangling (see `mise.toml`)
-- (optional) [Netlify CLI](https://docs.netlify.com/cli/get-started/) for managing live deployments
 
 ## Stack
 
@@ -42,29 +41,37 @@ bun run dev
 
 ## Deployment
 
+Hosting is moving from Netlify to Cloudflare Workers ([#367](https://github.com/queeromaha/queeromaha.net/issues/367)) as a blue/green cutover:
+
+- **Green:** a Worker on [queeromaha.dev](https://queeromaha.dev) serving `dist/` as static assets, Worker `queeromaha-net`, deployed with [Wrangler](https://developers.cloudflare.com/workers/wrangler/) (`wrangler.jsonc`). The Worker (`worker/`) handles the contact and Suggestion Box form POSTs (emailed through Cloudflare Email Routing) and `Accept: text/markdown` negotiation.
+- **Blue:** Netlify keeps serving queeromaha.net (`netlify.toml`, `netlify/`) until cutover.
+
+Both serve the same build, which keeps `https://queeromaha.net` as its canonical URL.
+
 ### Via CI
 
-The Netlify GitHub app is installed for this repo, which creates a "preview deployment" on (non-draft) Pull Requests.
+`.github/workflows/ci.yml` validates with voidflow's `site-ci.yml`, then:
 
-Merges to `main` (protected branch) will deploy the production site.
+- pushes to `main` deploy the Worker to production (GitHub environment `prod`)
+- non-draft pull requests get a Worker Preview named `pr-<number>`, linked in a PR comment and deleted when the PR closes (GitHub environment `preview`)
+
+Deploy tokens are scoped per Worker and minted by voidflow's `cf-tokens` from the fleet config in `taraxvoid/infra` (`cf-tokens.ts`): `prod` gets an environment secret `CLOUDFLARE_API_TOKEN`, Previews a repository secret of the same name. Both need a `CLOUDFLARE_ACCOUNT_ID` variable; `prod` also needs a `FORMS_TO` secret (the verified Email Routing address that form submissions go to). The Netlify GitHub app still deploys queeromaha.net and its own PR previews.
 
 ### Manually
 
 ```
-# install netlify CLI globally
-bun install -g netlify-cli
+# authenticate (or set CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID)
+bunx wrangler login
 
-# authenticate
-netlify login
+# build the site (dist/, which the Worker serves as assets)
+bun run build
 
-# link repo with Netlify project
-netlify link
+# run the Worker locally against dist/
+bun run preview:worker
 
-# create a test deployment
-netlify deploy
-
-# after validation, deploy production
-netlify deploy --production
+# validate, then deploy production
+bun run deploy:dry-run
+bun run deploy
 ```
 
 ### Lint and Tests

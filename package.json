@@ -33,6 +33,9 @@
         "serve": "astro dev",
         "build": "astro build && bun scripts/generate-redirects.ts && cp dist/sitemap-index.xml dist/sitemap.xml",
         "preview": "astro preview",
+        "preview:worker": "wrangler dev",
+        "deploy": "wrangler deploy",
+        "deploy:dry-run": "wrangler deploy --dry-run",
         "prepare": "lefthook install || echo 'lefthook not installed (run mise install); git hooks skipped'",
         "lint": "biome check .",
         "lint:migrate": "biome migrate --write",
@@ -83,7 +86,7 @@
         "@playwright/test": "^1.63.0",
         "@posthog/cli": "^0.18.0",
         "@socketsecurity/bun-security-scanner": "^1.1.2",
-        "@taraxvoid/voidflow": "^0.16.0",
+        "@taraxvoid/voidflow": "1.0.0-next",
         "@types/bun": "^1.4.1",
         "@types/semver": "^7.8.0",
         "favicons": "^7.3.1",
@@ -94,6 +97,7 @@
         "sharp": "^0.35.5",
         "typescript": "^6.0.3",
         "vitest": "^4.1.11",
+        "wrangler": "4.152.0",
         "yaml": "^2.9.0"
     },
     "overrides": {

@@ -6,6 +6,9 @@ TRANSWRONGS-REPORT.md
 # Build output
 dist/
 
+# Netlify CLI
+.netlify/
+
 # Generated types
 .astro/
 
@@ -34,8 +37,9 @@ docs/superpowers
 .DS_Store
 Thumbs.db
 
-# Netlify
-.netlify
+# Wrangler (local dev state, secrets)
+.wrangler/
+.dev.vars*
 
 # Playwright
 playwright-report/

@@ -5,15 +5,191 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
+    # closed: delete the PR's Worker Preview
+    types: [opened, synchronize, reopened, ready_for_review, closed]
   workflow_dispatch:
+  # a11y (and Lighthouse, if defined) only run on a schedule or manual run
+  schedule:
+    - cron: '17 6 * * *'
 
 permissions:
   contents: read
-  pull-requests: write
 
 jobs:
   validate:
-    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3f6252e4ab9000744b46d9d4d1a0172ee65cf992 # v0.13.1
+    if: github.event.action != 'closed'
+    # site-ci.yml declares pull-requests: write, so the caller must grant it
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
     with:
-      single-environment: true
+      e2e-extra-paths: '["worker/**"]'
+
+  # Blue/green: this deploys green (the Worker on queeromaha.dev). Netlify
+  # still serves queeromaha.net until cutover.
+  deploy:
+    name: Deploy
+    needs: validate
+    if: >-
+      github.ref == 'refs/heads/main'
+      && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      && vars.CLOUDFLARE_ACCOUNT_ID != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: prod
+      url: https://queeromaha.dev
+    concurrency:
+      group: deploy-prod
+      cancel-in-progress: false
+    permissions:
+      contents: read
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # bun and node from mise.toml
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+      - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+      - name: Build
+        run: bun run build
+      # Deploys add secrets without deleting others, so FORMS_TO rides along
+      # on every deploy and a rotated value takes effect on the next one.
+      - name: Write Worker secrets
+        env:
+          FORMS_TO: ${{ secrets.FORMS_TO }}
+        run: |
+          if [ -z "$FORMS_TO" ]; then
+            echo "::error::FORMS_TO secret is not set; deploying would blank the Worker's form destination" >&2
+            exit 1
+          fi
+          (umask 077; printf 'FORMS_TO=%s\n' "$FORMS_TO" > "$RUNNER_TEMP/worker-secrets.env")
+      - name: Deploy
+        uses: taraxvoid/voidflow/actions/cloudflare-deploy@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+        with:
+          env: prod
+          cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          cloudflare-account-id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          token-fallback: ${{ vars.CF_TOKEN_FALLBACK }}
+          command: deploy --secrets-file ${{ runner.temp }}/worker-secrets.env --message ${{ github.sha }}
+      - name: Remove Worker secrets
+        if: always()
+        run: rm -f "$RUNNER_TEMP/worker-secrets.env"
+      # Retries cover a custom domain's certificate still provisioning on the
+      # first deploy.
+      - name: Smoke test
+        run: |
+          retry=(--retry 12 --retry-delay 10 --retry-all-errors)
+          curl -fsS "${retry[@]}" -o /dev/null https://queeromaha.dev/friends/
+          md="$RUNNER_TEMP/friends.md"
+          curl -fsS "${retry[@]}" -H 'Accept: text/markdown' -o "$md" https://queeromaha.dev/friends/
+          grep -q '^# ' "$md"
+
+  # One Worker Preview per PR, named pr-<number>; deleted when the PR closes.
+  # Forks get no secrets, so they're skipped. The preview token is a repo
+  # secret (infra's cf-tokens.ts), so any job here can read it. Deploys and
+  # Previews skip until the CLOUDFLARE_ACCOUNT_ID variable is set.
+  preview:
+    name: Preview
+    needs: validate
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.action != 'closed'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && vars.CLOUDFLARE_ACCOUNT_ID != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: preview
+    concurrency:
+      group: preview-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+      - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+      - name: Build
+        run: bun run build
+      # `wrangler preview` (open beta) reads the `previews` block of
+      # wrangler.jsonc. Its --json stdout also carries asset-upload log lines,
+      # so read the Preview URL from the ND-JSON output file instead: the
+      # `type: "preview"` entry's `preview_urls` is the stable per-Preview URL
+      # (`deployment_urls` is the per-deployment one).
+      - name: Deploy Preview
+        id: preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          export WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/wrangler-output.ndjson"
+          bunx wrangler preview --name "pr-$PR_NUMBER" --message "PR #$PR_NUMBER"
+          url=$(jq -r 'select(.type == "preview") | .preview_urls[0] // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n1)
+          if [ -z "$url" ]; then
+            echo "::error::wrangler preview reported no Preview URL" >&2
+            exit 1
+          fi
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+      - name: Comment Preview URL
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PREVIEW_URL: ${{ steps.preview.outputs.url }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        # One comment per PR, found by its marker, updated on later pushes.
+        run: |
+          marker="<!-- cf-preview:pr-$PR_NUMBER -->"
+          body=$(printf '%s\nPreview: %s (at %s)\n' "$marker" "$PREVIEW_URL" "${SHA:0:7}")
+          # --jq runs per page, so take the first match in bash rather than
+          # piping into head (SIGPIPE under pipefail).
+          ids=$(gh api --paginate "repos/$GH_REPO/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.body | startswith(\"$marker\")) | .id")
+          id=${ids%%$'\n'*}
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GH_REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh api -X POST "repos/$GH_REPO/issues/$PR_NUMBER/comments" -f body="$body" > /dev/null
+          fi
+
+  preview-cleanup:
+    name: Delete Preview
+    if: >-
+      github.event_name == 'pull_request'
+      && github.event.action == 'closed'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && vars.CLOUDFLARE_ACCOUNT_ID != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: preview
+    # Same group as the Preview job: cancels a deploy still running from an
+    # earlier push, so it can't recreate pr-N after this deletes it.
+    concurrency:
+      group: preview-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    permissions:
+      contents: read
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
+      - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+      - name: Delete Preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        # A PR whose preview never deployed has nothing to delete.
+        run: bunx wrangler preview delete --name "pr-$PR_NUMBER" --skip-confirmation || true

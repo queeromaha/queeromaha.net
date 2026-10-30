@@ -1,3 +1,5 @@
+# Blue side of the blue/green move to Cloudflare Workers (#367): Netlify keeps
+# serving queeromaha.net until cutover, then this file and netlify/ go away.
 [build]
 publish = "dist"
 command = "bun run build"
