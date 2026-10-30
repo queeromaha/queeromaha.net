@@ -19,7 +19,7 @@ export interface NextEvent {
     summary: string
     location?: string
     // Deliberately built from Date.UTC() on wall-clock (America/Chicago)
-    // components, not a real instant — see getUpcomingEvents below.
+    // components, not a real instant - see getUpcomingEvents below.
     // Read this back only via getUTC* accessors, never local getters.
     start: Date
 }
@@ -72,7 +72,7 @@ const chicagoParts = new Intl.DateTimeFormat('en-US', {
 })
 
 // Converts a real instant into the America/Chicago wall-clock time,
-// represented as a fake-UTC Date (read back only via getUTC* accessors) —
+// represented as a fake-UTC Date (read back only via getUTC* accessors) -
 // this must go through the IANA tz database rather than the visitor's own
 // system timezone, since dtstart values are always Chicago wall-clock.
 export function fakeUtc(date: Date): Date {
@@ -119,7 +119,7 @@ export function getUpcomingEvents(
             continue
         }
 
-        // Collect up to `count` occurrences per event — the same
+        // Collect up to `count` occurrences per event - the same
         // recurring event can legitimately fill more than one of the
         // final slots if it's genuinely the next-soonest thing coming
         // up more than once (e.g. a weekly meetup happening twice

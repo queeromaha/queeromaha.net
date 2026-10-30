@@ -73,7 +73,7 @@
         "schema-dts": "^2.0.0"
     },
     "devDependencies": {
-        "@astrojs/check": "0.9.10",
+        "@astrojs/check": "0.9.12",
         "@axe-core/playwright": "^4.13.0",
         "@biomejs/biome": "^2.5.12",
         "@fontsource/karla": "^5.3.0",
@@ -81,7 +81,7 @@
         "@lizenz/checker": "^0.0.2",
         "@netlify/edge-functions": "^3.0.8",
         "@playwright/test": "^1.63.0",
-        "@posthog/cli": "^0.8.4",
+        "@posthog/cli": "^0.18.0",
         "@socketsecurity/bun-security-scanner": "^1.1.2",
         "@taraxvoid/voidflow": "^0.16.0",
         "@types/bun": "^1.4.1",
@@ -98,6 +98,6 @@
     },
     "overrides": {
         "shell-quote": "^1.11.0",
-        "basic-ftp": "6.2.1"
+        "basic-ftp": "6.2.3"
     }
 }

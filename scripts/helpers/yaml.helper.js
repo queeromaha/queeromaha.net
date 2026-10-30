@@ -6,10 +6,10 @@ import { parseDocument } from 'yaml'
  *
  * Uses `parseDocument` rather than `parse` so that comments survive the
  * round-trip (`yaml`'s `parse()` discards comments). `toString` accepts the
- * same `lineWidth: 0` option, so there is no line wrapping — matching the
+ * same `lineWidth: 0` option, so there is no line wrapping - matching the
  * content style of long, single-line `description:`/etc. fields.
  *
- * Note: Biome does not format YAML (see biomejs/biome#2365 — it is explicitly
+ * Note: Biome does not format YAML (see biomejs/biome#2365 - it is explicitly
  * deferred to community volunteers), so this file is the canonical YAML
  * formatter for the content directory.
  *

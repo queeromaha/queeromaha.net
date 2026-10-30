@@ -646,7 +646,7 @@ test('links are ordered calendar > instagram > discord > website > facebook', as
 }) => {
     // Search a few card-heavy categories for an entry with both an
     // instagram and a facebook link, rather than hardcoding a specific
-    // business — content changes independently of this test.
+    // business - content changes independently of this test.
     let found = false
     for (const path of ['/music/', '/makers/', '/friends/', '/cafes/']) {
         await page.goto(path)

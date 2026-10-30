@@ -78,7 +78,7 @@ items:
       google_maps_url: https://maps.app.goo.gl/gHdwtFr8pqcomCvq6
       street: 20th and Vinton
     recurring_events:
-      - summary: Sound Bath — Havalynn Russell
+      - summary: Sound Bath - Havalynn Russell
         rrule: FREQ=MONTHLY;BYDAY=2SU,3SU,4SU,5SU
         dtstart: "20250112"
         time: 10:30
@@ -97,7 +97,7 @@ items:
       google_maps_url: https://maps.app.goo.gl/gHdwtFr8pqcomCvq6
       street: 20th and Vinton
     recurring_events:
-      - summary: Sound Bath — Geoff Wertheim
+      - summary: Sound Bath - Geoff Wertheim
         rrule: FREQ=MONTHLY;BYDAY=1SU
         dtstart: "20250105"
         time: 13:11
@@ -106,7 +106,7 @@ items:
         url: https://www.facebook.com/geoff.wertheim.9
   - name: Hindu Chants (Kirtan) at Yoga Now
     public: true
-    description: Group Chants at Yoga Now in Benson last Fridays @ 6:30–8:00PM - no singing required
+    description: Group Chants at Yoga Now in Benson last Fridays @ 6:30-8:00PM - no singing required
     location:
       neighborhood: Benson
       street: 6105 Maple St

@@ -1,4 +1,4 @@
-title: Queer Omaha — LGBTQ+ Community Groups & Resources
+title: Queer Omaha - LGBTQ+ Community Groups & Resources
 description: Community-maintained guide to queer social groups, spiritual spaces, and resources in Omaha, Nebraska.
 items:
   - name: OmahaForUs
@@ -35,15 +35,15 @@ items:
       Craft Night on Wednesday evening 6PM to 7:30PM
       STI testing certain Thursdays (check schedule)
     recurring_events:
-      - summary: Support Group (19+) — OmahaForUs
+      - summary: Support Group (19+) - OmahaForUs
         rrule: FREQ=WEEKLY;BYDAY=WE
         dtstart: "20250101"
         time: 18:00
         end_time: 19:30
         location: OmahaForUs LGBTQIA* Center
-        description: Weekly support group (19+). Registration required. Hybrid — remote every other week.
+        description: Weekly support group (19+). Registration required. Hybrid - remote every other week.
         url: https://forms.office.com/Pages/ResponsePage.aspx?id=9u0lZEHkV06enOibWxjB9G4xeitP3kJGhExliU8hl9lUN1lMVUlWSjFCN0kxUVhRSE9LMFVFN0VBTC4u
-      - summary: Game Night — OmahaForUs
+      - summary: Game Night - OmahaForUs
         rrule: FREQ=WEEKLY;BYDAY=TH
         dtstart: "20250101"
         time: 17:00
@@ -51,7 +51,7 @@ items:
         location: OmahaForUs LGBTQIA* Center
         description: Weekly queer game night, pizza provided
         url: https://omahafor.us/events-calendar
-      - summary: Dungeons & Dragons — OmahaForUs
+      - summary: Dungeons & Dragons - OmahaForUs
         rrule: FREQ=MONTHLY;BYDAY=1TU,3TU
         dtstart: "20250107"
         time: 16:00
@@ -59,7 +59,7 @@ items:
         location: OmahaForUs LGBTQIA* Center
         description: D&D on the 1st and 3rd Tuesdays of each month.
         url: https://omahafor.us/events-calendar
-      - summary: Open Volunteering Day — OmahaForUs
+      - summary: Open Volunteering Day - OmahaForUs
         rrule: FREQ=MONTHLY;BYDAY=2FR
         dtstart: "20250107"
         time: 11:00
@@ -198,7 +198,7 @@ items:
     links:
       - label: FB
         url: https://www.facebook.com/groups/428335397593645
-    notes: Unverified — Tara don't got no FB.
+    notes: Unverified - Tara don't got no FB.
     tags:
       - online
   - name: No-Coast Noise Collective
@@ -225,11 +225,11 @@ items:
   - name: Omaha GLBT Sports
     vanity_slug: omaha-glbt-sports
     public: true
-    description: Year-round adult (19+) social sports. Volleyball, softball, darts and the Lousy Bowlers Club. Everyone welcome regardless of experience or sexuality.
+    description: Volleyball, softball, lawn darts and bowling.
     links:
       - label: Website
         url: https://www.oglbtsports.org/
-      - label: Lousy Bowlers Club
+      - label: Bowling Club
         url: https://www.oglbtsports.org/lousy-bowlers-club
       - label: Instagram
         url: https://www.instagram.com/omahaglbtsports/

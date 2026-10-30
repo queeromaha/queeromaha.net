@@ -160,7 +160,7 @@ function initFilters() {
                 if (isActive) return
                 // Every static route already ships the full card DOM, so
                 // switching category is a local hidden-toggle (instant, no
-                // fetch) — the pill's real href is only a JS-off fallback.
+                // fetch) - the pill's real href is only a JS-off fallback.
                 setCategory(slug)
                 history.pushState({}, '', buildUrl())
                 window.posthog?.capture('category_filter_changed', {
@@ -203,8 +203,8 @@ function initFilters() {
     applyFilters()
 }
 
-// Category and tag pills both filter client-side in place — there's no soft
-// navigation — so init once on normal page load.
+// Category and tag pills both filter client-side in place - there's no soft
+// navigation - so init once on normal page load.
 if (document.readyState === 'loading')
     document.addEventListener('DOMContentLoaded', initFilters)
 else initFilters()
