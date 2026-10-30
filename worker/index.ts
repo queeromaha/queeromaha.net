@@ -5,17 +5,16 @@
 // `_headers` and `_redirects`.
 import { EmailMessage } from 'cloudflare:email'
 import { type FormsEnv, handleForm } from './forms.ts'
-import { markdownPathFor } from './markdownPath.ts'
+import {
+    HAS_EXTENSION,
+    markdownPathFor,
+    wantsMarkdown,
+} from './markdownPath.ts'
 
 type Env = FormsEnv & {
     ASSETS: { fetch(request: Request | URL | string): Promise<Response> }
     FORMS_EMAIL: { send(message: EmailMessage): Promise<unknown> }
 }
-
-// Paths ending in a real file extension (images, .xml, .txt, the .md files
-// themselves) are served as-is; only the extensionless HTML pages have a
-// markdown twin.
-const HAS_EXTENSION = /\.[a-zA-Z0-9]+$/
 
 function withVary(response: Response): Response {
     const out = new Response(response.body, response)
@@ -27,11 +26,11 @@ async function negotiate(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
     if (HAS_EXTENSION.test(url.pathname)) return env.ASSETS.fetch(request)
 
-    const accept = request.headers.get('accept') ?? ''
-    if (accept.includes('text/markdown')) {
+    if (wantsMarkdown(request)) {
         const md = new URL(markdownPathFor(url.pathname), url)
         const res = await env.ASSETS.fetch(new Request(md, request))
-        if (res.ok) {
+        // A 304 is the markdown validator matching, not a missing twin.
+        if (res.ok || res.status === 304) {
             const out = withVary(res)
             out.headers.set('content-type', 'text/markdown; charset=utf-8')
             return out
