@@ -118,6 +118,11 @@ const tags = Object.entries(
     font-family: var(--font-mono);
     cursor: pointer;
     white-space: nowrap;
+    /* On narrow screens the row scrolls instead of wrapping and the pills
+       shrink; keep the icon at full size. */
+    svg {
+      flex: none;
+    }
     box-shadow: 0 2px 0 #ddd6fe;
     @media (prefers-reduced-motion: no-preference) {
       transition:
