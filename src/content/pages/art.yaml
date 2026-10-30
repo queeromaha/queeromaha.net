@@ -392,10 +392,8 @@ items:
   - name: NeXT Foundation Arts
     vanity_slug: next-foundation-arts
     public: true
-    description: Open Studios for Expressive Art in the MasterCraft Building
+    description: Expressive Art Therapy at Millwork
     links:
-      - label: Free Art Workshop (last Friday of the month)
-        url: https://nextfoundation.corsizio.com/event/69d8318ee3976dce4b4278a8
       - label: Events Calendar
         url: https://www.nextfoundationomaha.com/programs-services
     location:
