@@ -53,6 +53,17 @@ describe('parseSubmission', () => {
             ),
         ).toEqual({ ok: false, error: 'invalid email' })
     })
+    test('rejects a non-ASCII contact email', () => {
+        expect(
+            parseSubmission(
+                form({
+                    'form-name': 'contact',
+                    email: 'tära@example.com',
+                    message: 'hello',
+                }),
+            ),
+        ).toEqual({ ok: false, error: 'invalid email' })
+    })
     test('flags a filled honeypot as spam', () => {
         expect(
             parseSubmission(

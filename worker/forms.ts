@@ -9,9 +9,11 @@ export const FORMS_FROM = 'forms@queeromaha.dev'
 const SUGGESTION_MAX = 140
 const MESSAGE_MAX = 5000
 const EMAIL_MAX = 254
-// One address, no whitespace or header-breaking characters. Deliberately
-// loose: the input is type=email, this only keeps the Reply-To header sane.
-const EMAIL_RE = /^[^\s@<>()",;:\\]+@[^\s@<>()",;:\\]+\.[^\s@<>()",;:\\]+$/
+// One printable-ASCII address, no whitespace or header-breaking characters.
+// Deliberately loose: the input is type=email, this only keeps the Reply-To
+// and Subject headers sane (raw UTF-8 there needs RFC 2047 or SMTPUTF8).
+const EMAIL_RE =
+    /^(?=[\x21-\x7e]+$)[^@<>()",;:\\]+@[^@<>()",;:\\]+\.[^@<>()",;:\\]+$/
 
 export type Submission =
     | { form: 'contact'; email: string; message: string }
