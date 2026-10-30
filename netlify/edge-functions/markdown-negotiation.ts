@@ -2,7 +2,7 @@ import type { Context } from '@netlify/edge-functions'
 import { markdownPathFor } from '../lib/markdownPath.ts'
 
 // Any request path ending in a real file extension (images, .xml, .txt,
-// .ico, the .md files themselves, etc.) is served as-is — content
+// .ico, the .md files themselves, etc.) is served as-is - content
 // negotiation only applies to the HTML directory/permalink pages, whose
 // paths never contain a dot.
 const HAS_EXTENSION = /\.[a-zA-Z0-9]+$/

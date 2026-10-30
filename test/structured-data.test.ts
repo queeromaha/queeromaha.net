@@ -67,7 +67,7 @@ describe('toJsonLdScript', () => {
             name: '</script><img src=x onerror=alert(1)>',
         }
         const out = toJsonLdScript(payload)
-        // Raw stringify would contain a literal "</script" — the helper must not.
+        // Raw stringify would contain a literal "</script" - the helper must not.
         expect(out).not.toContain('</script')
         expect(out).not.toContain('<script')
         expect(out).toContain('\\u003c/script')
@@ -82,7 +82,7 @@ describe('structured data (JSON-LD)', () => {
     test('produces dist/ (run `bun run build` before this test)', () => {
         expect(
             existsSync(DIST),
-            'dist/ not found — run `bun run build` before this test',
+            'dist/ not found - run `bun run build` before this test',
         ).toBe(true)
     })
 
@@ -113,7 +113,7 @@ describe('structured data (JSON-LD)', () => {
                 // Every JSON-LD block must be emitted through toJsonLdScript,
                 // which escapes `<` to "\u003c". A raw `<` (especially
                 // "</script") would let untrusted/escaped content break out of
-                // the <script type="application/ld+json"> tag — this is the
+                // the <script type="application/ld+json"> tag - this is the
                 // regression that previously let HeadMeta.astro skip escaping.
                 expect(
                     b.raw,

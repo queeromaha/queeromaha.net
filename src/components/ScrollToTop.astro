@@ -112,7 +112,7 @@ import { Icon } from 'astro-icon/components'
   /* Hide alongside the other footer buttons while the suggestion box or
    calendar box is open (theme.css's [open] ~ .footer-* rules can't reach
    this far since #backToTop is a sibling of <footer>, not nested
-   inside it — :has() is the only way to reach across that boundary). */
+   inside it - :has() is the only way to reach across that boundary). */
   :global(body:has(.site-footer [open])) .back-to-top {
     display: none;
   }

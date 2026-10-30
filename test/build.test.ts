@@ -55,7 +55,7 @@ describe('astro build', () => {
         const distDir = join(ROOT, 'dist')
         expect(
             existsSync(distDir),
-            'dist/ not found — run `bun run build` before this test',
+            'dist/ not found - run `bun run build` before this test',
         ).toBe(true)
         expect(readdirSync(distDir).length).toBeGreaterThan(0)
     })

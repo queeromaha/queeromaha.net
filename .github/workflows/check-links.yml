@@ -1,10 +1,10 @@
 name: Check Links
 
-# Dead-link checker — runs scripts/check-links.ts against the built dist/
+# Dead-link checker - runs scripts/check-links.ts against the built dist/
 # HTML and markdown. Weekly all-links scan (cron) + manual dispatch.
 on:
   schedule:
-    - cron: "0 9 * * 1" # Every Monday 9am UTC — full scan to catch stale/dead links
+    - cron: "0 9 * * 1" # Every Monday 9am UTC - full scan to catch stale/dead links
   workflow_dispatch:
 
 concurrency:

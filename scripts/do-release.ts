@@ -54,7 +54,7 @@ const bumpPrompt = `Current version: ${currentVersion}
 Commits to release:
 ${commits}
 
-Suggesting minor bump to ${semver.inc(currentVersion, suggested)} — accept? [Y/n/major]`
+Suggesting minor bump to ${semver.inc(currentVersion, suggested)} - accept? [Y/n/major]`
 
 process.stdout.write(`\n${bumpPrompt}\n\nYour choice: `)
 
