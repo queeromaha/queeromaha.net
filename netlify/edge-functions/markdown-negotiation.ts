@@ -1,5 +1,5 @@
 import type { Context } from '@netlify/edge-functions'
-import { markdownPathFor } from '../lib/markdownPath.ts'
+import { markdownPathFor } from '../../worker/markdownPath.ts'
 
 // Any request path ending in a real file extension (images, .xml, .txt,
 // .ico, the .md files themselves, etc.) is served as-is - content
