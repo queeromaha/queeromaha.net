@@ -46,7 +46,7 @@
     },
   },
   "overrides": {
-    "basic-ftp": "6.2.1",
+    "basic-ftp": "6.2.3",
     "shell-quote": "^1.11.0",
   },
   "packages": {
