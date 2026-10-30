@@ -24,7 +24,7 @@ jobs:
       pull-requests: write
     uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
     with:
-      e2e-extra-paths: '["wrangler.jsonc", "worker/**"]'
+      e2e-extra-paths: '["worker/**"]'
 
   # Blue/green: this deploys green (the Worker on queeromaha.dev). Netlify
   # still serves queeromaha.net until cutover.
