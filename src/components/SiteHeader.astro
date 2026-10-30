@@ -17,7 +17,7 @@ const pathname = Astro.url.pathname.replace(/\/$/, '')
         Object.entries(categoryMap).map(([slug, { icon, label }]) => (
           <li>
             <a
-              href={`/${slug}/`}
+              href={`/${slug}`}
               data-astro-prefetch
               aria-current={
                 pathname === `/${slug}`
