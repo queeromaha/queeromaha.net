@@ -115,8 +115,10 @@ jobs:
       - name: Build
         run: bun run build
       # `wrangler preview` (open beta) reads the `previews` block of
-      # wrangler.jsonc. Its --json shape isn't documented yet: take the first
-      # https URL.
+      # wrangler.jsonc. Its --json stdout also carries asset-upload log lines,
+      # so read the Preview URL from the ND-JSON output file instead: the
+      # `type: "preview"` entry's `preview_urls` is the stable per-Preview URL
+      # (`deployment_urls` is the per-deployment one).
       - name: Deploy Preview
         id: preview
         env:
@@ -124,9 +126,9 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          bunx wrangler preview --name "pr-$PR_NUMBER" --message "PR #$PR_NUMBER" --json \
-            | tee "$RUNNER_TEMP/preview.json"
-          url=$(jq -r '[.. | strings | select(test("^https://"))] | first // empty' "$RUNNER_TEMP/preview.json")
+          export WRANGLER_OUTPUT_FILE_PATH="$RUNNER_TEMP/wrangler-output.ndjson"
+          bunx wrangler preview --name "pr-$PR_NUMBER" --message "PR #$PR_NUMBER"
+          url=$(jq -r 'select(.type == "preview") | .preview_urls[0] // empty' "$WRANGLER_OUTPUT_FILE_PATH" | tail -n1)
           if [ -z "$url" ]; then
             echo "::error::wrangler preview reported no Preview URL" >&2
             exit 1
