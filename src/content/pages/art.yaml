@@ -6,8 +6,6 @@ items:
     public: true
     description: Get paid for your art.
     links:
-      - label: Open Calls for Art
-        url: https://www.amplifyarts.org/open-calls
       - label: Awesome Resources List
         url: https://www.amplifyarts.org/resources
     location:
