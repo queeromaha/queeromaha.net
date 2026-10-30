@@ -6,7 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 bun run serve          # dev server (Astro, localhost:4321) with hot-reload
-bun run build          # build static site to dist/ (astro build + scripts/generate-redirects.ts + sitemap.xml copy)
+bun run build          # build:site, then build:worker
+bun run build:site     # static site to dist/ (astro build + scripts/generate-redirects.ts + sitemap.xml copy); Netlify runs this
+bun run build:worker   # cf Build Output for the Worker (.cloudflare/output, from dist/ + worker/)
+bun run preview:worker # run the Worker locally against dist/ (forms + markdown negotiation)
+bun run deploy         # cf deploy --prebuilt (needs CLOUDFLARE_API_TOKEN; CI deploys main)
 bun run preview        # preview built dist/ locally
 bun run check          # astro check (type checking)
 
@@ -67,7 +71,7 @@ package.
 
 ## Architecture
 
-Static site built with **Astro**, deployed to Netlify. Content lives as plain YAML edited directly via git. Single layout at `src/layouts/Base.astro`.
+Static site built with **Astro**, served from Cloudflare Workers static assets with a small Worker in front (`worker/`), deployed with the `cf` CLI (`cloudflare.config.ts`; build settings in `wrangler.config.ts`). Mid blue/green cutover (#367): the Worker serves queeromaha.dev while Netlify (`netlify.toml`, `netlify/`) still serves queeromaha.net from the same build, whose canonical URL stays queeromaha.net. `cf` needs Node ^24.22 and doesn't run on Bun; never run `cf build`/`cf deploy` without `--prebuilt` here (cf detects Astro and runs `astro build` itself, skipping the redirects step). Content lives as plain YAML edited directly via git. Single layout at `src/layouts/Base.astro`.
 
 ### Content model
 
@@ -93,7 +97,7 @@ Zod schemas live in `src/content.config.ts`. The `directory` collection uses the
 - `/[category]` - directory with that category pre-filtered (e.g. `/art`, `/spiritual`)
 - `/[category]/[item-slug]` - item permalink within a category
 - `/[...].md` - Markdown rendering of the same directory/filter/item routes (for LLM/agent consumption), served by `src/pages/[...filters].md.ts`
-- `/contact` - standalone contact form (Netlify Forms)
+- `/contact` - standalone contact form. Form POSTs (any path, `form-name` field) go to the Worker (`worker/forms.ts`), which checks the `bot-field` honeypot, rate-limits per IP, and emails the submission from forms@queeromaha.dev to the `FORMS_TO` secret via Email Routing. The `data-netlify` attributes stay for Netlify (blue) until cutover
 - `/privacy` - privacy policy
 - `/events.ics` - iCal feed generated from `recurring_events` across all items
 - `/llms.txt` - llms.txt service doc, advertised via a `Link: </llms.txt>; rel="service-doc"` response header
@@ -141,7 +145,8 @@ The footer (`src/components/SiteFooter.astro`) holds three `<details>`/`<summary
 - `test/structured-data.test.ts` - validates JSON-LD output from `HeadMeta.astro`
 - `test/filter.test.ts`, `test/itemSlug.test.ts`, `test/slugify.test.ts`, `test/location.test.ts`, `test/ical.test.ts`, `test/eventsPreview.test.ts` - unit tests for the corresponding `src/utils/*`
 - `test/generate-redirects.test.ts` - `scripts/generate-redirects.ts`
-- `test/markdownPath.test.ts` - `netlify/lib/markdownPath.ts` (URL to `.md` path mapping)
+- `test/markdownPath.test.ts` - `worker/markdownPath.ts` (URL to `.md` path mapping, shared by the Worker and the Netlify edge function)
+- `test/forms.test.ts` - `worker/forms.ts` (form parsing, email message, handler responses)
 - `test/e2e/site.spec.js` - Playwright tests serving `dist/` on port 4242
 - `test/e2e/a11y.spec.js` - Playwright + axe-core accessibility checks
 - `test/pages/*.test.ts` - tests for `.ics`, `.md`, `llms.txt`, and `robots.txt` route handlers

@@ -26,9 +26,10 @@ import Base from '#layouts/Base.astro'
           client IP addresses are redacted before logging.
         </li>
         <li>
-          <strong>Suggestion Box and Contact submissions.</strong> Suggestions are
-          sent to Netlify and emailed to site admins. Email addresses are only used
-          for correspondence and not for marketing.
+          <strong>Suggestion Box and Contact submissions.</strong> Submissions are
+          emailed to site admins by our hosting provider (Cloudflare, or Netlify
+          while we finish moving off it). Email addresses are only used for
+          correspondence and not for marketing.
         </li>
       </ul>
 
@@ -40,15 +41,17 @@ import Base from '#layouts/Base.astro'
 
       <h3>Who we share it with</h3>
       <p>
-        PostHog Inc. (analytics) and Netlify, Inc. (form handling and site
-        hosting). We don't sell data or share it.
+        PostHog Inc. (analytics), Cloudflare, Inc. (site hosting and form
+        email), and, until our move to Cloudflare is done, Netlify, Inc. (site
+        hosting and form handling). We don't sell data or share it.
       </p>
 
       <h3>How long we keep it</h3>
       <p>
         Analytics events are kept per PostHog's standard retention. Suggestion
-        Box and Contact submissions are kept until actioned and according to
-        Netlify data retention.
+        Box and Contact submissions are kept in the admins' inbox until
+        actioned; Cloudflare doesn't store them, and Netlify keeps the ones it
+        handles according to its data retention.
       </p>
 
       <h3>Questions</h3>
