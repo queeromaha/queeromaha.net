@@ -81,7 +81,7 @@
         "@lizenz/checker": "^0.0.2",
         "@netlify/edge-functions": "^3.0.8",
         "@playwright/test": "^1.63.0",
-        "@posthog/cli": "^0.8.4",
+        "@posthog/cli": "^0.18.0",
         "@socketsecurity/bun-security-scanner": "^1.1.2",
         "@taraxvoid/voidflow": "^0.16.0",
         "@types/bun": "^1.4.1",
