@@ -8,7 +8,8 @@ on:
     # closed: delete the PR's Worker Preview
     types: [opened, synchronize, reopened, ready_for_review, closed]
   workflow_dispatch:
-  # a11y (and Lighthouse, if defined) only run on a schedule or manual run
+  # a11y (and Lighthouse, if defined) only run on a schedule or manual run;
+  # a failed audit warns instead of failing the run (site-ci's red-audits)
   schedule:
     - cron: '17 6 * * *'
 
@@ -16,15 +17,14 @@ permissions:
   contents: read
 
 jobs:
+  # site-ci skips closed events itself, and worker/** counts as e2e-relevant
+  # code under its default e2e-ignore-paths.
   validate:
-    if: github.event.action != 'closed'
-    # site-ci.yml declares pull-requests: write, so the caller must grant it
+    # site-ci.yml declares pull-requests: read, so the caller must grant it
     permissions:
       contents: read
-      pull-requests: write
-    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
-    with:
-      e2e-extra-paths: '["worker/**"]'
+      pull-requests: read
+    uses: taraxvoid/voidflow/.github/workflows/site-ci.yml@0c24fa27e9c0b1fb452874e859fd5eb626c6bee6 # next (after #260, #274, #277)
 
   # Blue/green: this deploys green (the Worker on queeromaha.dev). Netlify
   # still serves queeromaha.net until cutover.
@@ -53,7 +53,7 @@ jobs:
           persist-credentials: false
       # bun and node from mise.toml
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
-      - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+      - uses: taraxvoid/voidflow/actions/bun-install@0c24fa27e9c0b1fb452874e859fd5eb626c6bee6 # next (after #260, #274, #277)
       - name: Build
         run: bun run build
       # Deploys add secrets without deleting others, so FORMS_TO rides along
@@ -68,7 +68,7 @@ jobs:
           fi
           (umask 077; printf 'FORMS_TO=%s\n' "$FORMS_TO" > "$RUNNER_TEMP/worker-secrets.env")
       - name: Deploy
-        uses: taraxvoid/voidflow/actions/cloudflare-deploy@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+        uses: taraxvoid/voidflow/actions/cloudflare-deploy@0c24fa27e9c0b1fb452874e859fd5eb626c6bee6 # next (after #260, #274, #277)
         with:
           env: prod
           cloudflare-api-token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -116,7 +116,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
-      - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+      - uses: taraxvoid/voidflow/actions/bun-install@0c24fa27e9c0b1fb452874e859fd5eb626c6bee6 # next (after #260, #274, #277)
       - name: Build
         run: bun run build
       # `wrangler preview` (open beta) reads the `previews` block of
@@ -185,7 +185,7 @@ jobs:
         with:
           persist-credentials: false
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
-      - uses: taraxvoid/voidflow/actions/bun-install@3cdc7a254a2886e787b5615e219e43743085998c # v1.0.0-next
+      - uses: taraxvoid/voidflow/actions/bun-install@0c24fa27e9c0b1fb452874e859fd5eb626c6bee6 # next (after #260, #274, #277)
       - name: Delete Preview
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
