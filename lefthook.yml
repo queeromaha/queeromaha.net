@@ -4,6 +4,6 @@
 # (here: test:unit:precommit skips tests that need a built dist/).
 remotes:
   - git_url: https://github.com/taraxvoid/voidflow
-    ref: v1.0.0-next
+    ref: v1.0.0-next.1
     configs:
       - lefthook/base.yml
