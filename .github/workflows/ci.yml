@@ -7,6 +7,8 @@ on:
     branches: [main]
     # closed: delete the PR's Worker Preview
     types: [opened, synchronize, reopened, ready_for_review, closed]
+  # merge queue: the required check must report on the queue's temp branch
+  merge_group:
   workflow_dispatch:
   # a11y (and Lighthouse, if defined) only run on a schedule or manual run;
   # a failed audit warns instead of failing the run (site-ci's red-audits)
