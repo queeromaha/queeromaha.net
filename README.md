@@ -186,11 +186,48 @@ bun run changelog:unreleased
 #### Link Checker
 
 `bun run check:links` parses the built `dist/` HTML and markdown for external
-links, tests them against the live web, and reports failures. It runs in CI on
-every PR and weekly via the [Check Links workflow](.github/workflows/check-links.yml).
+links, tests them against the live web, and reports failures. Besides hard
+failures (`dead`, `inaccessible`, `dns-failed`, which exit non-zero) it prints
+`moved` (permanent redirect to another site or into a parking host) and
+`suspect` (HTTP 200 but the page looks parked, expired or like a hosting
+provider's own 404) as "worth a look" without failing. The rules for those two
+live in `scripts/helpers/linkHeuristics.ts`; when a new kind of rot slips
+through, add a pattern there and a case in `test/linkHeuristics.test.ts`.
 
 Run it locally:
 
 ```
 bun run build && bun run check:links
+```
+
+##### Weekly triage workflow
+
+Every Monday the [Check Links workflow](.github/workflows/check-links.md) runs
+the checker, then hands the findings to an agent
+([GitHub Agentic Workflows](https://github.github.com/gh-aw/)) to triage. The
+agent does not fetch anything itself: `scripts/link-evidence.ts` first collects
+the redirect chain, what the landing page says, whether the site root is still
+up, DNS state, the closest Wayback snapshot, and which YAML item holds the URL.
+From that, the agent opens one PR that fixes moved URLs, drops a dead link
+from an entry that has others, or sets `public: false` (with a `notes:` line)
+when a place is gone, plus one issue for anything it left alone or could not
+decide. It only touches `src/content/pages/*.yaml`. If nothing is flagged, the
+agent never starts.
+
+The workflow needs an `ANTHROPIC_API_KEY` secret, and the repo setting
+"Allow GitHub Actions to create and approve pull requests". Edit the `.md`
+file, not `check-links.lock.yml`, then recompile and commit both:
+
+```
+gh extension install github/gh-aw   # once
+gh aw compile check-links
+```
+
+Run it on demand from the Actions tab (`workflow_dispatch`), or reproduce the
+inputs locally:
+
+```
+bun run build
+bun scripts/check-links.ts --json /tmp/report.json
+bun scripts/link-evidence.ts /tmp/report.json /tmp/evidence.json
 ```
