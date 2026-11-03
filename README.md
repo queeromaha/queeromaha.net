@@ -202,8 +202,7 @@ bun run build && bun run check:links
 
 ##### Weekly triage workflow
 
-Every Monday the [Check Links workflow](.github/workflows/check-links.md) runs
-the checker, then hands the findings to an agent
+Every Monday the Check Links workflows run the checker, then hand the findings to an agent
 ([GitHub Agentic Workflows](https://github.github.com/gh-aw/)) to triage. The
 agent does not fetch anything itself: `scripts/link-evidence.ts` first collects
 the redirect chain, what the landing page says, whether the site root is still
@@ -214,13 +213,22 @@ when a place is gone, plus one issue for anything it left alone or could not
 decide. It only touches `src/content/pages/*.yaml`. If nothing is flagged, the
 agent never starts.
 
-The workflow needs an `ANTHROPIC_API_KEY` secret, and the repo setting
-"Allow GitHub Actions to create and approve pull requests". Edit the `.md`
-file, not `check-links.lock.yml`, then recompile and commit both:
+It runs as an engine A/B: [`check-links-claude.md`](.github/workflows/check-links-claude.md)
+and [`check-links-copilot.md`](.github/workflows/check-links-copilot.md) are
+identical apart from `engine:` and their `[claude]`/`[copilot]` PR and issue
+prefixes and labels. Shared steps live in `.github/workflows/shared/link-triage.md`
+and the prompt in `.github/shared/link-triage-prompt.md`. Both open PRs against
+the same YAML, so merge the better one and close the other. To end the trial,
+delete the losing `.md` and `.lock.yml`.
+
+Secrets: `ANTHROPIC_API_KEY` (Claude arm) and `COPILOT_GITHUB_TOKEN` (Copilot
+arm), plus the repo setting "Allow GitHub Actions to create and approve pull
+requests". Edit the `.md` files, not the `*.lock.yml`, then recompile and
+commit both:
 
 ```
 gh extension install github/gh-aw   # once
-gh aw compile check-links
+gh aw compile
 ```
 
 Run it on demand from the Actions tab (`workflow_dispatch`), or reproduce the
