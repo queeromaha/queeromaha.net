@@ -8,11 +8,23 @@
  * DNS resolution failure = dns-failed. 405/429 and 5xx are treated as OK
  * (temporary/method). Redirects are not followed (SSRF guard). .linkcheckignore
  * patterns are skipped. Private/internal addresses are blocked.
+ *
+ * Two softer labels never affect the exit code but are reported (and written
+ * to the --json report) for triage: `moved` (a 3xx that changes site or goes
+ * to a parking host) and `suspect` (a 200 whose page looks parked, expired or
+ * like a hosting provider's own 404). Rules live in helpers/linkHeuristics.ts.
+ *
+ * Usage: bun scripts/check-links.ts [--json <path>]
  */
 
 import { lookup } from 'node:dns/promises'
-import { readdirSync, readFileSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join, relative } from 'node:path'
+import {
+    BODY_SAMPLE_BYTES,
+    classifyRedirect,
+    detectSignals,
+} from './helpers/linkHeuristics.ts'
 
 const DIST_DIR = 'dist'
 const MD_LINK_RE = /\[[^\]]*\]\((https?:\/\/[^)]+)\)/g
@@ -31,6 +43,20 @@ interface LinkResult {
     source: string
     status: number | null
     error: string | null
+    /** Location header of a 3xx response */
+    location: string | null
+    /** Soft-failure signals found in a 200 response body */
+    signals: string[]
+}
+
+interface Finding {
+    url: string
+    label: 'dead' | 'inaccessible' | 'dns-failed' | 'moved' | 'suspect'
+    status: number | null
+    /** Why this was flagged, for soft labels */
+    reason: string | null
+    location: string | null
+    sources: string[]
 }
 
 function loadIgnorePatterns(): RegExp[] {
@@ -90,7 +116,8 @@ function getExternalLinks(): Map<string, Set<string>> {
         const links = extractLinks(content, isMarkdown)
 
         for (const raw of links) {
-            const url = raw.replace(/\\n$/, '').trim()
+            // hrefs are HTML-escaped in dist/; fetch (and report) the real URL
+            const url = raw.replace(/\\n$/, '').replace(/&amp;/g, '&').trim()
             if (!url.startsWith('http')) continue
             if (shouldIgnore(url)) continue
 
@@ -123,7 +150,7 @@ function isPrivateIP(ip: string): boolean {
     return PRIVATE_NETS.some((re) => re.test(ip))
 }
 
-async function isInternalURL(url: string): Promise<boolean> {
+export async function isInternalURL(url: string): Promise<boolean> {
     try {
         const { hostname } = new URL(url)
         if (hostname === 'localhost' || hostname.endsWith('.local')) {
@@ -139,11 +166,39 @@ async function isInternalURL(url: string): Promise<boolean> {
     }
 }
 
-async function checkUrl(
-    url: string,
-): Promise<{ status: number | null; error: string | null }> {
+type CheckOutcome = Pick<
+    LinkResult,
+    'status' | 'error' | 'location' | 'signals'
+>
+
+/** Reads up to BODY_SAMPLE_BYTES of a response, then abandons the rest. */
+export async function readSample(res: Response): Promise<string> {
+    if (!res.body) return ''
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let text = ''
+    let bytes = 0
+    try {
+        while (bytes < BODY_SAMPLE_BYTES) {
+            const { done, value } = await reader.read()
+            if (done) break
+            bytes += value.byteLength
+            text += decoder.decode(value, { stream: true })
+        }
+    } finally {
+        await reader.cancel().catch(() => {})
+    }
+    return text
+}
+
+async function checkUrl(url: string): Promise<CheckOutcome> {
     if (await isInternalURL(url)) {
-        return { status: null, error: 'skipped: private/internal address' }
+        return {
+            status: null,
+            error: 'skipped: private/internal address',
+            location: null,
+            signals: [],
+        }
     }
 
     let lastError: string | null = null
@@ -164,7 +219,21 @@ async function checkUrl(
                 redirect: 'manual',
             })
 
-            return { status: res.status, error: null }
+            let signals: string[] = []
+            if (
+                res.status === 200 &&
+                (res.headers.get('content-type') ?? '').includes('html')
+            ) {
+                signals = detectSignals(await readSample(res))
+            } else {
+                await res.body?.cancel().catch(() => {})
+            }
+            return {
+                status: res.status,
+                error: null,
+                location: res.headers.get('location'),
+                signals,
+            }
         } catch (e) {
             lastError = e instanceof Error ? e.message : String(e)
             if (attempt < MAX_RETRIES) {
@@ -175,7 +244,7 @@ async function checkUrl(
         }
     }
 
-    return { status: null, error: lastError }
+    return { status: null, error: lastError, location: null, signals: [] }
 }
 
 async function checkAllLinks(
@@ -191,9 +260,9 @@ async function checkAllLinks(
             const entry = entries.shift()
             if (!entry) break
             const [url, sources] = entry
-            const { status, error } = await checkUrl(url)
+            const outcome = await checkUrl(url)
             for (const source of sources) {
-                results.push({ url, source, status, error })
+                results.push({ url, source, ...outcome })
             }
             completed++
             process.stdout.write(`\r  Testing links: ${completed}/${total}`)
@@ -207,6 +276,21 @@ async function checkAllLinks(
     return results
 }
 
+interface Report {
+    tested: number
+    findings: Finding[]
+    unreachable: { url: string; error: string; sources: string[] }[]
+}
+
+/** `--json <path>`: also write the findings as machine-readable JSON. */
+function writeReport(report: Report) {
+    const flag = process.argv.indexOf('--json')
+    const path = flag === -1 ? undefined : process.argv[flag + 1]
+    if (!path) return
+    mkdirSync(dirname(path), { recursive: true })
+    writeFileSync(path, `${JSON.stringify(report, null, 2)}\n`)
+}
+
 async function main() {
     const start = Date.now()
 
@@ -215,6 +299,7 @@ async function main() {
     const links = getExternalLinks()
     if (links.size === 0) {
         console.log('  No external links found.')
+        writeReport({ tested: 0, findings: [], unreachable: [] })
         process.exit(0)
     }
 
@@ -287,6 +372,37 @@ async function main() {
         }),
     )
 
+    const softMap = new Map<string, Finding>()
+    for (const r of results) {
+        let label: Finding['label'] | null = null
+        let reason: string | null = null
+        if (r.status !== null && r.status >= 300 && r.status < 400) {
+            reason = classifyRedirect(r.url, r.status, r.location)
+            label = 'moved'
+        } else if (r.status === 200 && r.signals.length > 0) {
+            reason = `page looks gone or parked (${r.signals.join(', ')})`
+            label = 'suspect'
+        }
+        if (!label || !reason) continue
+        const existing = softMap.get(r.url)
+        if (existing) {
+            existing.sources.push(r.source)
+        } else {
+            softMap.set(r.url, {
+                url: r.url,
+                label,
+                status: r.status,
+                reason,
+                location: r.location,
+                sources: [r.source],
+            })
+        }
+    }
+    const softFindings = [...softMap.values()].map((f) => ({
+        ...f,
+        sources: [...new Set(f.sources)],
+    }))
+
     const skippedUrls = new Set(
         results.filter((r) => r.error?.includes('skipped:')).map((r) => r.url),
     )
@@ -345,6 +461,18 @@ async function main() {
         }
     }
 
+    if (softFindings.length > 0) {
+        console.log(`${BOLD}Worth a look (does not fail the check):${RESET}\n`)
+        for (const f of softFindings) {
+            console.log(
+                `  ${YELLOW}[${f.label}]${RESET} ${BOLD}${f.url}${RESET}`,
+            )
+            console.log(`    ${f.reason}`)
+            printSources(f.sources)
+            console.log()
+        }
+    }
+
     if (errorMap.size > 0) {
         console.log(`${BOLD}Unreachable (skipped):${RESET}\n`)
         for (const [url, { error, sources }] of errorMap) {
@@ -381,7 +509,32 @@ async function main() {
     if (uniqueFailures.length === 0 && errorMap.size === 0)
         console.log(`  ${DIM}All links passed.${RESET}`)
 
+    if (softFindings.length > 0)
+        console.log(`  ${YELLOW}Worth a look:${RESET} ${softFindings.length}`)
+
+    writeReport({
+        tested: links.size,
+        findings: [
+            ...uniqueFailures.map(
+                (f): Finding => ({
+                    ...f,
+                    label: f.label as Finding['label'],
+                    reason: null,
+                    location: null,
+                }),
+            ),
+            ...softFindings,
+        ],
+        unreachable: [...errorMap].map(([url, { error, sources }]) => ({
+            url,
+            error,
+            sources: [...new Set(sources)],
+        })),
+    })
+
     process.exit(uniqueFailures.length > 0 ? 1 : 0)
 }
 
-main()
+if (import.meta.main) {
+    main()
+}
