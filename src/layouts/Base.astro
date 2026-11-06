@@ -24,7 +24,12 @@ const {
     refresh,
 } = Astro.props
 const pageTitle = title ? `${title} | Queer Omaha` : 'Queer Omaha'
-const canonicalUrl = new URL(Astro.url.pathname, site.url).href
+// The Worker drops trailing slashes (wrangler.jsonc), so `/cafes/` would
+// redirect; point canonical at the URL that actually serves.
+const canonicalUrl = new URL(
+    Astro.url.pathname.replace(/(.)\/$/, '$1'),
+    site.url,
+).href
 ---
 
 <!doctype html>
