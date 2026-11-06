@@ -532,6 +532,31 @@ test('suggestion form shows inline confirmation without navigating', async ({
 
     // Form replaced by confirmation message
     await expect(page.locator('.suggestion-thanks')).toBeVisible()
+
+    // Regression: the text used to inherit the footer's near-white color
+    // onto the light panel. It must meet WCAG AA against the panel.
+    const ratio = await page.locator('.suggestion-thanks').evaluate((el) => {
+        const rgb = (c) =>
+            c
+                .match(/[\d.]+/g)
+                .slice(0, 3)
+                .map(Number)
+        const lum = ([r, g, b]) =>
+            [r, g, b]
+                .map((v) => {
+                    const s = v / 255
+                    return s <= 0.03928
+                        ? s / 12.92
+                        : ((s + 0.055) / 1.055) ** 2.4
+                })
+                .reduce((sum, v, i) => sum + v * [0.2126, 0.7152, 0.0722][i], 0)
+        const panel = el.closest('.suggestion-box-panel-wrap')
+        const a = lum(rgb(getComputedStyle(el).color))
+        const b = lum(rgb(getComputedStyle(panel).backgroundColor))
+        return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+    })
+    expect(ratio).toBeGreaterThanOrEqual(4.5)
+
     await expect(page.locator('form[name="suggest"]')).not.toBeAttached()
     // Send lives outside the form (associated via the form= attribute)
     // so it needs its own explicit removal on success

@@ -533,6 +533,9 @@ summary.footer-pill-btn::-webkit-details-marker {
 .suggestion-thanks {
     background: rgba(76, 29, 118, 0.08);
     border-left: 3px solid #7c3aed;
+    /* The panel is light but sits in the dark footer, so without an
+       explicit color this inherits the footer's near-white text. */
+    color: #4c1d95;
 }
 
 .suggestion-error {
@@ -1086,6 +1089,7 @@ blockquote p {
     .suggestion-thanks {
         background: rgba(196, 181, 253, 0.08);
         border-left-color: var(--dm-glow);
+        color: var(--dm-haze);
     }
 
     .suggestion-error {
