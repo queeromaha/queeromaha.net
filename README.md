@@ -67,7 +67,7 @@ bunx wrangler login
 bun run build
 
 # run the Worker locally against dist/
-bun run preview:worker
+bun run preview
 
 # validate, then deploy production
 bun run deploy:dry-run
