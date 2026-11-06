@@ -40,8 +40,8 @@ Git hooks (lefthook, shared config pinned from `taraxvoid/voidflow`; install the
 
 Playwright defaults to the `mobile-chrome` project (`devices['Pixel 7']`) as
 the primary e2e target; `desktop-chrome` is opt-in via `test:e2e:desktop`
-(or `test:e2e:all` for both). The e2e suite serves the built `dist/` through
-the Worker (`bun run preview`, via voidflow's shared Playwright config) on port 4242 in CI.
+(or `test:e2e:all` for both). The e2e suite serves the built `dist/` via
+`astro preview` on port 4242.
 
 ### Commit messages
 
