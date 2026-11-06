@@ -40,6 +40,7 @@ Thumbs.db
 # Wrangler (local dev state, secrets)
 .wrangler/
 .dev.vars*
+!.dev.vars.example
 
 # Playwright
 playwright-report/
