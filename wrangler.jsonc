@@ -18,7 +18,10 @@
     "assets": {
         "directory": "./dist",
         "binding": "ASSETS",
-        "html_handling": "auto-trailing-slash",
+        // The site's URLs have no trailing slash (nav links, pushState, the
+        // _redirects targets). The default adds one with a 307 hop, so `/`
+        // took two redirects to reach a page.
+        "html_handling": "drop-trailing-slash",
         "not_found_handling": "404-page",
         // The Worker only acts on POSTs and markdown-accepting page requests,
         // both on extensionless paths, so built files skip it (`*` matches

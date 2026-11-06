@@ -7,9 +7,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 bun run serve          # dev server (Astro, localhost:4321) with hot-reload
 bun run build          # static site to dist/ (astro build + scripts/generate-redirects.ts + sitemap.xml copy)
-bun run preview:worker # wrangler dev: the Worker locally against dist/ (forms + markdown negotiation)
+bun run preview        # wrangler dev: the Worker locally against dist/ (forms + markdown negotiation, reads .dev.vars)
 bun run deploy         # wrangler deploy (needs CLOUDFLARE_API_TOKEN; CI deploys main)
-bun run preview        # preview built dist/ locally
 bun run check          # astro check (type checking)
 
 bun run lint           # check formatting (biome)
@@ -41,8 +40,8 @@ Git hooks (lefthook, shared config pinned from `taraxvoid/voidflow`; install the
 
 Playwright defaults to the `mobile-chrome` project (`devices['Pixel 7']`) as
 the primary e2e target; `desktop-chrome` is opt-in via `test:e2e:desktop`
-(or `test:e2e:all` for both). The e2e suite serves the built `dist/` via
-`astro preview` on port 4242.
+(or `test:e2e:all` for both). The e2e suite serves the built `dist/` through
+the Worker (`bun run preview`, started by voidflow's shared Playwright config) on port 4242 in CI.
 
 ### Commit messages
 
