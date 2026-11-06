@@ -189,12 +189,17 @@ describe('handleForm', () => {
     })
 
     test('returns 503 when no destination is configured', async () => {
+        // The handler logs this on purpose; keep it out of test output.
+        const error = vi.spyOn(console, 'error').mockImplementation(() => {})
         const res = await handleForm(
             post('form-name=suggest&message=hi'),
             env({ FORMS_TO: undefined }),
             vi.fn(),
         )
         expect(res.status).toBe(503)
+        expect(error).toHaveBeenCalledWith(
+            'FORMS_TO is not set; form submission dropped',
+        )
     })
 
     test('returns 502 when sending fails', async () => {
