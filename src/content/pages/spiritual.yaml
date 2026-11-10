@@ -8,8 +8,10 @@ items:
     public: true
     description: Dawaune creates a container to be unapologetically heard on Sundays 5PM to 7PM @ Ananda Yoga (Pay What You Can)
     links:
-      - label: Instagram
+      - label: Their Instagram
         url: https://www.instagram.com/dawaune.one/
+      - label: Ananda's Instagram 
+        url: https://www.instagram.com/ananda.omaha/
     location:
       street: 49th and Dodge
       city: Omaha
