@@ -5,6 +5,8 @@ The MIT license in LICENSE covers the code in this repository.
 My content is not covered by that license and is all rights reserved:
 
 - the directory listings in `src/content/`
-- the site copy, logo, favicons and images in `public/` and `src/`
+- the logo, favicons and share image in `public/` (`logo.svg`, `og-image.png`,
+  the `android-chrome-*` and `apple-touch-icon-*` files)
+- the written site copy, not the page and component code that displays it
 
 If you fork this repo, replace it with your own.
