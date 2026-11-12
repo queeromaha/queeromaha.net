@@ -1,0 +1,10 @@
+The MIT license in LICENSE covers the code in this repository.
+
+## My content
+
+My content is not covered by that license and is all rights reserved:
+
+- the directory listings in `src/content/`
+- the site copy, logo, favicons and images in `public/` and `src/`
+
+If you fork this repo, replace it with your own.

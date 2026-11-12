@@ -200,3 +200,7 @@ Run it locally:
 ```
 bun run build && bun run check:links
 ```
+
+## License
+
+Code is [MIT](LICENSE). My content is excluded and all rights reserved: the directory listings in `src/content/`, and the site copy, logo, favicons and images. See [NOTICE](NOTICE), which is separate so `LICENSE` stays the unmodified MIT text that license scanners recognize.
