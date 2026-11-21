@@ -44,6 +44,20 @@ items:
       - label: Linktree
         url: https://linktr.ee/Thingsbythor
   - public: true
+    name: Heaven Scent Coffee
+    location:
+      city: Omaha
+    links:
+      - label: Facebook
+        url: https://www.facebook.com/people/Heaven-Scent-Coffee-LLC/61575198885912/
+      - label: Instagram
+        url: https://www.instagram.com/heavenscentcoffee
+    description: Pop-up Cold Brew coffeeshop serving Omaha and its environs
+    notes: |+
+      Maya @ Roast Blondo and husband. at seasonal markets i.e. farmer's markets
+      craft / festivals. In Springfield, Wahoo, Waterloo, Valley, OMA
+        
+  - public: true
     name: Paper Crane Books & Tattoo
     tags:
       - neutral-bathrooms
